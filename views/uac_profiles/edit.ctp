@@ -10,6 +10,7 @@
 <?php
 
 echo $this->Form->create('UacProfile');
+echo $this->Form->input('id');
 echo $this->Form->input('screen_name');
 echo $this->Form->input('about');
 echo $this->Form->end(__('Save profile', true));

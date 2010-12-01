@@ -36,16 +36,10 @@
 		//called before Controller::redirect()
 		function beforeRedirect(&$controller, $url, $status=null, $exit=true) {
 		}
-	
-		function redirectSomewhere($value) {
-			// utilizing a controller method
-			$this->Controller->redirect($value);
-		}
-
 		
 		private function __pre_check() {
 			
-			if (!$this->Controller->Session->read('Auth.UaRole')) {
+			if (!$this->Controller->Session->read('Auth.UacRole')) {
 				return false;
 			}
 			
@@ -76,6 +70,44 @@
 			
 		}
 		
+		/**
+		 * Return Auth session
+		 *
+		 * @return array
+		 * @author Rui Cruz
+		 */
+		function user() {
+			
+			return $this->Controller->Session->read('Auth');
+			
+		}
+		
+		/**
+		 * Saves profiles changes and updates Auth session data
+		 *
+		 * @param array $data 
+		 * @return mixed
+		 * @author Rui Cruz
+		 */
+		function update($data) {
+			
+			if (empty($data)) return false;
+			
+			$result = $this->Controller->UacProfile->save($data);
+			
+			if ($result !== false) {
+				
+				$new_session_data = $this->user();
+				$new_session_data = Set::merge($new_session_data, $data);
+				
+				$this->Controller->Session->write('Auth', $new_session_data);
+				
+			}
+			
+			return $result;
+			
+		}
+		
 		function checkInvitation() {
 			
 			# CHECK IF INVITATION IS MANDATORY
@@ -83,13 +115,13 @@
 				
 				$result = true;
 				
-			} elseif (!isset($this->Controller->data['UaUser']['activation_code'])) {
+			} elseif (!isset($this->Controller->data['UacUser']['activation_code'])) {
 				
 				$result = false;
 				
 			} else {
 			
-				define('INVITATION_CODE', $this->Controller->data['UaUser']['activation_code']);
+				define('INVITATION_CODE', $this->Controller->data['UacUser']['activation_code']);
 				$InvitationCode = ClassRegistry::init('Invitation.InvitationCode');
 				$record = $InvitationCode->findByCode(INVITATION_CODE);
 				
@@ -124,8 +156,8 @@
 			if (!empty($this->Controller->data)) {
 				
 				$cookie = array();
-				$cookie['username'] = $this->data['UaUser']['username'];
-				$cookie['password'] = $this->data['UaUser']['password']; #TODO Check if password is encripted or not
+				$cookie['username'] = $this->data['UacUser']['username'];
+				$cookie['password'] = $this->data['UacUser']['password']; #TODO Check if password is encripted or not
 				
 				if (isset($this->Controller->data[$this->Controller->Auth->userModel][$this->__cookieOption])) {
 					

@@ -65,7 +65,8 @@ class UacUsersController extends UacAppController {
 		
 		if (!is_null($this->Auth->user())) {
 			
-			$user = $this->Auth->user();
+			$this->UacUser->Contain();
+			$user = $this->UacUser->findById($this->Auth->user('id'));
 			
 		} elseif (!is_null($password_hash_code)) {
 			
@@ -90,11 +91,10 @@ class UacUsersController extends UacAppController {
 		
 				$this->Session->setFlash(__('Please correct the errors below', true));
 				$this->UacUser->invalidate('oldpassword', __('Your current password doesn\'t match', true));
+				unset($this->data['UacUser']);
 				return;
 				
 			}
-
-			pr($this->data);
 
 			$user['UacUser']['password'] = $this->data['UacUser']['password'];
 
@@ -138,9 +138,9 @@ class UacUsersController extends UacAppController {
 
 			}
 
-			unset($this->data['UacUser']);
-
 		}
+		
+		unset($this->data['UacUser']);
 		
 	}
 	

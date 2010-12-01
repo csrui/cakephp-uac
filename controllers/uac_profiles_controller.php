@@ -3,21 +3,30 @@ class UacProfilesController extends UacAppController {
 
 	var $name = 'UacProfiles';
 	
-	
+	/**
+	 * Change users profile
+	 *
+	 * @return void
+	 * @author Rui Cruz
+	 */
 	function edit() {
 		
 		if (!empty($this->data)) {
 			
-			if ($this->UacProfile->save($this->data)) {
+			if ($this->Account->update($this->data)) {
+			
 				$this->Session->setFlash(__('Your profile was saved', true));
-				$this->redirect('/');
+				$this->redirect(Configure::read('User.edit.redirect'));
+				
 			} else {
+				
 				$this->Session->setFlash(__('There is an error on your profile', true));
+				
 			}
 			
 		} else {
 			
-			$this->data = $this->UacProfile->read(null, $this->Auth->user('id'));
+			$this->data = $this->Account->user();
 			
 		}
 		
