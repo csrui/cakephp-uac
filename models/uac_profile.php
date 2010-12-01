@@ -15,6 +15,17 @@ class UacProfile extends UacAppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
+		'username'=>array(
+			'Username has to be at least four characters' => array(
+				'rule' => array('minLength', 4)
+			),
+			'This username is already taken, please try another' => array(
+				'rule' => 'isUnique'
+			),
+			'Please use only letters, numbers, dashes or underscores' => array(
+				'rule' => 'alphaNumericDashUnderscore'
+			)
+		)
 	);
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
 

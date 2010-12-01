@@ -3,6 +3,10 @@
 	<?php echo $this->Html->link(__('Change', true), array('plugin' => 'uac', 'controller' => 'uac_images', 'action' => 'add'))?>
 </div>
 
+<ul>
+	<li><?php echo $this->Html->Link('Change password', array('controller' => 'uac_users', 'action' => 'password_change'))?></li>
+</ul>
+
 <?php
 
 echo $this->Form->create('UacProfile');

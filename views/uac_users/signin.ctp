@@ -5,4 +5,6 @@ echo $this->Form->input('email');
 echo $this->Form->input('password');
 echo $this->Form->end(__('Sign in', true));
 
+echo $this->Html->link(__('Forgot your password?', true), array('action' => 'password_recover'));
+
 ?>

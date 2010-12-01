@@ -70,6 +70,7 @@
 			# UPDATE USERS LAST_LOGIN PROPERTY
 			$this->Controller->UacUser->id = $this->data['UacUser']['id'];
 			$this->Controller->UacUser->saveField('last_login', date('Y-m-d H:i:s'));
+			#TODO Clear password_change_hash
 			
 			$this->__setCookies();
 			
