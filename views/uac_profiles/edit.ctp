@@ -13,6 +13,16 @@ echo $this->Form->create('UacProfile');
 echo $this->Form->input('id');
 echo $this->Form->input('screen_name');
 echo $this->Form->input('about');
+
+echo $this->Form->input('first_name');
+echo $this->Form->input('last_name');
+
+echo $this->Form->input('dob', array('label' => 'Date of birth', 'type' => 'text', 'class' => 'datepicker'));
+echo $this->Form->input('gender', array('options' => $genders));
+
+echo $this->Form->input('address');
+echo $this->Form->input('language');
+
 echo $this->Form->end(__('Save profile', true));
 
 ?>

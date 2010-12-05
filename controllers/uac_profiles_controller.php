@@ -3,6 +3,14 @@ class UacProfilesController extends UacAppController {
 
 	var $name = 'UacProfiles';
 	
+	function beforeFilter() {
+		
+		parent::beforeFilter();
+		
+		$this->set('title_for_layout', __('Profile', true));
+		
+	}
+	
 	/**
 	 * Change users profile
 	 *
@@ -10,6 +18,12 @@ class UacProfilesController extends UacAppController {
 	 * @author Rui Cruz
 	 */
 	function edit() {
+		
+		$this->set('genders', array(
+			'Unspecified' => 'Unspecified',
+			'Male' => 'Male',
+			'Female' => 'Female'
+		));
 		
 		if (!empty($this->data)) {
 			
