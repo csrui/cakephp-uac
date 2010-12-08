@@ -1,6 +1,6 @@
 <?php 
 /* SVN FILE: $Id$ */
-/* uac schema generated on: 2010-12-01 15:12:01 : 1291217821*/
+/* uac schema generated on: 2010-12-08 14:12:21 : 1291817241*/
 class uacSchema extends CakeSchema {
 	var $name = 'uac';
 
@@ -27,6 +27,14 @@ class uacSchema extends CakeSchema {
 		'screen_name' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 45, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'),
 		'avatar_filename' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 75, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'),
 		'about' => array('type' => 'text', 'null' => true, 'default' => NULL, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'),
+		'first_name' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 50, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'),
+		'last_name' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 50, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'),
+		'dob' => array('type' => 'date', 'null' => true, 'default' => NULL),
+		'gender' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 50, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'),
+		'address' => array('type' => 'string', 'null' => true, 'default' => NULL, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'),
+		'language' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 45, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'),
+		'created' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
+		'modified' => array('type' => 'datetime', 'null' => true, 'default' => NULL),
 		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'uac_user_id_UNIQUE' => array('column' => 'uac_user_id', 'unique' => 1), 'fk_profiles_uac_users1' => array('column' => 'uac_user_id', 'unique' => 0)),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB')
 	);
