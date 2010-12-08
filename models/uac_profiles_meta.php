@@ -10,6 +10,14 @@ class UacProfileMeta extends UacAppModel {
 			'order' => ''
 		)
 	);
+
+	function beforeSave($options) {
+		
+		parent::beforeSave($options);
+		
+		#TODO Transform Array values to JSON Objects
+		
+	}
 	
 }
 ?>

@@ -19,11 +19,7 @@ class UacProfilesController extends UacAppController {
 	 */
 	function edit() {
 		
-		$this->set('genders', array(
-			'Unspecified' => 'Unspecified',
-			'Male' => 'Male',
-			'Female' => 'Female'
-		));
+		$this->set('genders', Configure::read('User.profile.genders'));
 		
 		if (!empty($this->data)) {
 			
@@ -41,7 +37,8 @@ class UacProfilesController extends UacAppController {
 		} else {
 			
 			$this->data = $this->Account->user();
-			
+			$this->data = Set::merge($this->data, $this->UacProfile->UacProfileMeta->findByUacProfileId($this->Auth->user('id')));
+
 		}
 		
 	}

@@ -21,7 +21,11 @@ echo $this->Form->input('dob', array('label' => 'Date of birth', 'type' => 'text
 echo $this->Form->input('gender', array('options' => $genders));
 
 echo $this->Form->input('address');
-echo $this->Form->input('language');
+
+$languages = Configure::read('App.languages');
+if (!empty($languages)) {
+	echo $this->Form->input('language', array('options' => $languages));
+}
 
 echo $this->Form->end(__('Save profile', true));
 
