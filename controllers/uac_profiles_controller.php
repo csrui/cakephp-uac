@@ -50,7 +50,7 @@ class UacProfilesController extends UacAppController {
 		
 		$user_id = empty($id) ? $this->Auth->user('id') : $id;
 		
-		$this->UacProfile->recursive = -1;
+		$this->UacProfile->Contain('UacProfileMeta');
 		$this->set('profile', $this->UacProfile->read(null, $user_id));
 		
 	}

@@ -26,7 +26,7 @@ class UacUser extends UacAppModel {
 		'UacProfile' => array(
 			'className' => 'Uac.UacProfile',
 			'foreignKey' => 'uac_user_id',
-			'dependent' => false,
+			'dependent' => true,
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',

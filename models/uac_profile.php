@@ -38,6 +38,18 @@ class UacProfile extends UacAppModel {
 			'order' => ''
 		)
 	);
+
+	var $hasOne = array(
+		'UacProfileMeta' => array(
+			'className' => 'Uac.UacProfileMeta',
+			'foreignKey' => 'uac_profile_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'dependent' => true,
+		)
+	);
+
 	
 	var $hasMany = array(
 		'UacImage' => array(
@@ -45,7 +57,8 @@ class UacProfile extends UacAppModel {
 			'foreignKey' => 'uac_profile_id',
 			'conditions' => '',
 			'fields' => '',
-			'order' => ''
+			'order' => '',
+			'dependent' => true,			
 		)
 	);	
 	
