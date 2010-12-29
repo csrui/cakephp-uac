@@ -1,12 +1,11 @@
 <?php
-class UacUsersController extends UacAppController {
 
-	var $name = 'UacUsers';
+class UacUsersController extends UacAppController {
 	
 	function beforeFilter() {
 		
 		parent::beforeFilter();
-		$this->Auth->allow('signup', 'password_recover', 'password_change');
+		$this->Auth->allow('signup', 'signin', 'password_recover');
 		$this->Auth->authenticate = $this->UacUser;
 		
 	}
@@ -15,38 +14,34 @@ class UacUsersController extends UacAppController {
 	function signup() {
 		
 		if (!empty($this->data)) {
+		
+			if ($this->Account->signup()) {
 			
-			$this->UacUser->create($this->data);			
-			if ($this->UacUser->save($this->data)) {
-				
-				$this->Session->setFlash(__('Your account is created', true));
-				$this->redirect(array('action' => 'signin'));
-				
+				$this->Session->setFlash(__('Your account is created', true));				
+				$this->redirect(Configure::read('User.signup.redirect'));
+			
 			} else {
-				
+			
 				$this->Session->setFlash(__('Sorry there\'s a problem and we cant create your account', true));
-				unset($this->data['UacUser']['password']);
-				
+			
 			}
 			
 		}
 		
 	}
 	
-	
 	function signin() {
 		
 		if (!empty($this->data)) {
 		
-			if ($this->Auth->user()) {
-	
-				$this->Account->login();
-				$this->redirect($this->Auth->redirect());
+			if ($this->Account->signin()) {
+			
+				$this->redirect($this->Auth->loginRedirect);
 				
 			} else {
 	
-				$this->Session->setFlash(__('No user found with the provided username and password', true));
-				
+				$this->Session->setFlash(__('No user found with the provided credentials', true));
+			
 			}
 			
 		}
@@ -60,8 +55,9 @@ class UacUsersController extends UacAppController {
 		
 	}
 	
-
 	function password_change($password_hash_code = null) {
+		
+		#TODO Refactor code to Account Component
 		
 		if (!is_null($this->Auth->user())) {
 			
@@ -151,6 +147,8 @@ class UacUsersController extends UacAppController {
 	 * @author Rui Cruz
 	 */
 	function password_recover() {
+		
+		#TODO Refactor code to Account Component
 		
 		if (!empty($this->data)) {
 			

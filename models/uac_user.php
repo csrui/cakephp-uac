@@ -38,6 +38,12 @@ class UacUser extends UacAppModel {
 		)
 	);
 	
+	var $hasAndBelongsToMany = array(
+		'UacRole' => array(
+			'className' => 'Uac.UacRole'
+		)
+	);
+	
 	
 	function afterSave($created) {
 		
@@ -61,10 +67,8 @@ class UacUser extends UacAppModel {
 		
 		$this->data['UacProfile']['uac_user_id'] = $this->id;
 
-		/*
-		$mail = explode('@', $this->data[$this->alias]['email']);
-		$this->data['UacProfile']['screen_name'] = $mail[0];
-		*/
+		$email = explode('@', $this->data['UacUser']['email']);
+		$this->data['UacProfile']['screen_name'] = $email[0];
 		
 		$this->UacProfile->create();
 		return $this->UacProfile->save($this->data);

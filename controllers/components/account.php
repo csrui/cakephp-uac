@@ -1,211 +1,158 @@
 <?php
 
-    class AccountComponent extends Object {
+class AccountComponent extends Object {
+	
+	var $components = array('Facebook.Connect', 'CronMailer.EmailQueue');
+	
+	var $controller = null;
+	
+	var $settings = array(
+		'cookie_name' => 'remember_me',
+		'roles_redirect' => '/'
+	);
+	
+	var $roles = array();
+	
+	var $data = null;
+	
+	//called before Controller::beforeFilter()
+	function initialize(&$controller, $settings = array()) {
+		// saving the controller reference for later use
+		$this->controller =& $controller;
 		
-		var $__roleModel = 'UaRole';
+		$this->settings = Set::merge($this->settings, $settings);
 		
-		var $__cookieOption = 'remember_me';
+	}
+	
+	function signin() {
 		
-		var $Controller = null;
+		if ($this->controller->Auth->user()) {
+
+			# GET CURRENT SCOPE CONDITIONS FROM AUTH COMPONENT
+			$conditions = $this->controller->Auth->data['UacUser'];
+			$this->controller->UacUser->Contain('UacProfile','UacRole');
+			$this->data = $this->controller->UacUser->find('first', compact('conditions'));
+
+			unset($conditions[$this->settings['cookie_name']]);
+
+			# SET SESSION WITH ALL MODEL INFORMATION
+			foreach($this->data as $model_name => $model_data) {
+	
+				$this->controller->Session->write('Auth.'.$model_name, $model_data);
 		
-		var $data = null;
-		
-		//called before Controller::beforeFilter()
-		function initialize(&$controller, $settings = array()) {
-			// saving the controller reference for later use
-			$this->Controller =& $controller;
-			
-			// if no Roles are in Session, redirect
-			if (!$this->__pre_check()) {
-				
 			}
-		}
 	
-		//called after Controller::beforeFilter()
-		function startup(&$controller) {
-		}
+			# UPDATE USERS LAST_LOGIN PROPERTY
+			$this->controller->UacUser->id = $this->data['UacUser']['id'];
+			$this->controller->UacUser->saveField('last_login', date('Y-m-d H:i:s'));
+			#TODO Clear password_change_hash
 	
-		//called after Controller::beforeRender()
-		function beforeRender(&$controller) {
-		}
-	
-		//called after Controller::render()
-		function shutdown(&$controller) {
-		}
-	
-		//called before Controller::redirect()
-		function beforeRedirect(&$controller, $url, $status=null, $exit=true) {
-		}
-		
-		private function __pre_check() {
-			
-			if (!$this->Controller->Session->read('Auth.UacRole')) {
-				return false;
-			}
+			$this->__setCookies();
 			
 			return true;
 			
 		}
 		
-		function login() {
-			
-			$conditions = $this->Controller->Auth->data['UacUser'];
-			$this->data = $this->Controller->UacUser->find('first', compact('conditions'));
+		return false;
+		
+	}
+	
+	function signup() {
 
-			unset($conditions[$this->__cookieOption]);
-
-			# SET SESSION WITH ALL MODEL INFORMATION
-			foreach($this->data as $model_name => $model_data) {
+		if (!empty($this->controller->data)) {
 			
-				$this->Controller->Session->write('Auth.'.$model_name, $model_data);
+			$this->controller->UacUser->create($this->controller->data);			
+			if ($this->controller->UacUser->save($this->controller->data)) {
 				
-			}
-			
-			# UPDATE USERS LAST_LOGIN PROPERTY
-			$this->Controller->UacUser->id = $this->data['UacUser']['id'];
-			$this->Controller->UacUser->saveField('last_login', date('Y-m-d H:i:s'));
-			#TODO Clear password_change_hash
-			
-			$this->__setCookies();
-			
-		}
-		
-		/**
-		 * Return Auth session
-		 *
-		 * @return array
-		 * @author Rui Cruz
-		 */
-		function user() {
-			
-			return $this->Controller->Session->read('Auth');
-			
-		}
-		
-		/**
-		 * Saves profiles changes and updates Auth session data
-		 *
-		 * @param array $data 
-		 * @return mixed
-		 * @author Rui Cruz
-		 */
-		function update($data) {
-			
-			if (empty($data)) return false;
-			
-			$result = $this->Controller->UacProfile->save($data);
-			
-			if ($result !== false) {
-				
-				$new_session_data = $this->user();
-				$new_session_data = Set::merge($new_session_data, $data);
-				
-				$this->Controller->Session->write('Auth', $new_session_data);
-				
-			}
-			
-			return $result;
-			
-		}
-		
-		function checkInvitation() {
-			
-			# CHECK IF INVITATION IS MANDATORY
-			if (configure::read('App.invitation_only') == false) {
-				
-				$result = true;
-				
-			} elseif (!isset($this->Controller->data['UacUser']['activation_code'])) {
-				
-				$result = false;
+				$this->afterSignup();
+				return true;
 				
 			} else {
-			
-				define('INVITATION_CODE', $this->Controller->data['UacUser']['activation_code']);
-				$InvitationCode = ClassRegistry::init('Invitation.InvitationCode');
-				$record = $InvitationCode->findByCode(INVITATION_CODE);
 				
-				if (!$record) {
-					
-					$result = false;
-					
-				} elseif ($record['InvitationCode']['amount'] == 0) {
-					
-					$result = false;
-					
-				} else {
+				unset($this->controller->data['UacUser']['password']);
 				
-					$InvitationCode->id = $record['InvitationCode']['id'];
-					$InvitationCode->saveField('amount', $record['InvitationCode']['amount']-1);
-					$result = true;
-					
-				}
+				return false;
 				
 			}
 			
-			$this->Controller->Session->write('Signup.invitation_ok', $result);
+		}
+
+	}
+	
+	function afterSignup() {
+		
+		$this->EmailQueue->to = $this->controller->data['UacUser']['email'];
+		$this->EmailQueue->from = Configure::read('Email.username');
+		$this->EmailQueue->subject = sprintf('%s %s', Configure::read('App.name'), __('New account activation', true));
+		$this->EmailQueue->template = $this->controller->action;
+		$this->EmailQueue->sendAs = 'both';
+		$this->EmailQueue->delivery = 'db';
+		$this->EmailQueue->send();
+		
+	}
+	
+	/**
+	 * Return Auth session
+	 *
+	 * @return array
+	 * @author Rui Cruz
+	 */
+	function user() {
+		
+		return $this->controller->Session->read('Auth');
+		
+	}
+	
+	/**
+	 * Saves profiles changes and updates Auth session data
+	 *
+	 * @param array $data 
+	 * @return mixed
+	 * @author Rui Cruz
+	 */
+	function updateProfile($data) {
+		
+		if (empty($data)) return false;
+		
+		$result = $this->controller->UacProfile->save($data);
+		
+		if ($result !== false) {
+			
+			$new_session_data = $this->user();
+			$new_session_data = Set::merge($new_session_data, $data);
+			
+			$this->controller->Session->write('Auth', $new_session_data);
 			
 		}
 		
-		/**
-		 * Save Cookies if data is available
-		 * @return void
-		 */
-		function __setCookies() {
-			
-			if (!empty($this->Controller->data)) {
+		return $result;
+		
+	}
+	
+	/**
+	 * 
+	 * Search for at least one role in the user session
+	 * @param unknown_type $needed_roles
+	 * @param unknown_type $redirect
+	 */
+	function checkRoles($needed_roles, $redirect = false) {
+		
+		if (empty($this->roles)) {
+			$this->roles = $this->controller->Session->read('Auth.UacRole');
+		}
+		
+		$result = false;
+		
+		if (!empty($needed_roles) && !empty($this->roles)) {
+		
+			foreach($needed_roles as $need_role) {
 				
-				$cookie = array();
-				$cookie['username'] = $this->data['UacUser']['username'];
-				$cookie['password'] = $this->data['UacUser']['password']; #TODO Check if password is encripted or not
-				
-				if (isset($this->Controller->data[$this->Controller->Auth->userModel][$this->__cookieOption])) {
+				foreach($this->roles as $sess_role) {
 					
-					$this->Controller->Cookie->write('Auth.'.$this->Controller->Auth->userModel, $cookie, true, Configure::read('User.Cookie.LifeTime'));
-				    unset($this->Controller->data[$this->Controller->Auth->userModel][$this->__cookieOption]);
-					
-				}
-			}
-			
-		}
-		
-		/**
-		 * Kills current session and cookies
-		 * @return void
-		 */
-		function logout() {
-			
-			$this->Controller->autoRender = false;
-			$this->Controller->Auth->logout();
-			$this->Controller->Session->delete('Auth');
-			$this->Controller->redirect('/');
-			
-		}
-		
-		/**
-		 * Checks for the request roles
-		 * @return void
-		 */
-		function roles() {
-			
-			$needed_roles = (array) func_get_args();
-			
-			$session_roles = $this->Controller->Session->read('Auth.'.$this->__roleModel);
-			
-			$result = false;
-			
-			if (!empty($needed_roles) && !empty($session_roles)) {
-			
-				foreach($needed_roles as $need_role) {
-					
-					foreach($session_roles as $sess_role) {
+					if (strtolower($need_role) == strtolower($sess_role['name'])) {
 						
-						if (strtolower($need_role) == strtolower($sess_role['name'])) {
-							
-							$result = true;
-							break;
-							
-						}
+						$result = true;
+						break;
 						
 					}
 					
@@ -213,38 +160,97 @@
 				
 			}
 			
-			if ($result === false) {
+		}
+		
+		if ( ($redirect === true) && ($result !== true) ) {
+		
+			$this->controller->Session->setFlash(__("You don't have permission to access that resource", true));
+			$this->controller->redirect($this->settings['roles_redirect']);
 			
-				$this->Controller->Session->setFlash(__("You don't have permission to access that resource", true));
-				$this->Controller->redirect('/');
+		}
+
+		return $result;
+		
+	}
+	
+	function checkInvitation() {
+		
+		# CHECK IF INVITATION IS MANDATORY
+		if (configure::read('App.invitation_only') == false) {
+			
+			$result = true;
+			
+		} elseif (!isset($this->controller->data['UacUser']['activation_code'])) {
+			
+			$result = false;
+			
+		} else {
+		
+			define('INVITATION_CODE', $this->controller->data['UacUser']['activation_code']);
+			$InvitationCode = ClassRegistry::init('Invitation.InvitationCode');
+			$record = $InvitationCode->findByCode(INVITATION_CODE);
+			
+			if (!$record) {
+				
+				$result = false;
+				
+			} elseif ($record['InvitationCode']['amount'] == 0) {
+				
+				$result = false;
+				
+			} else {
+			
+				$InvitationCode->id = $record['InvitationCode']['id'];
+				$InvitationCode->saveField('amount', $record['InvitationCode']['amount']-1);
+				$result = true;
 				
 			}
 			
 		}
 		
-		/**
-		 * 
-		 * Checks for the Auth->user('id') in a given string/array
-		 * @param mixed $data
-		 * @param mixed $path
-		 * @return bol
-		 */
-		function containAuth($data, $path = null) {
+		$this->controller->Session->write('Signup.invitation_ok', $result);
+		
+	}
+	
+	/**
+	 * Save Cookies if controller data is available
+	 * @return void
+	 */
+	function __setCookies() {
+		
+		if (!empty($this->controller->data)) {
 			
-			if (is_null($path)) {
+			$cookie = array();
+			$cookie['email'] = $this->controller->data['UacUser']['email'];
+			#$cookie['password'] = $this->controller->data['UacUser']['password']; #TODO Check if password is encripted or not
+			
+			if (isset($this->controller->data[$this->controller->Auth->userModel][$this->settings['cookie_name']])) {
 				
-				return $data == $this->Controller->Auth->user('id');
-				
-			} else {
-								
-				$path_result = set::extract($data, $path);
-				return in_array($this->Controller->Auth->user('id'), $path_result);
+				# SET A NEW COOKIE
+				$this->controller->Cookie->write('Auth.'.$this->controller->Auth->userModel, $cookie, true, Configure::read('User.cookie.lifetime'));
+			    unset($this->controller->data[$this->controller->Auth->userModel][$this->settings['cookie_name']]);
 				
 			}
-			
-			
 		}
-				
+		
 	}
+	
+	/**
+	 * Kills current session and cookies
+	 * @return void
+	 */
+	function logout() {
+		
+		$this->controller->autoRender = false;
+		$this->controller->Auth->logout();
+		
+		# MAKE SURE ALL OTHER UAC MODELS ARE REMOVED FROM SESSION 
+		$this->controller->Session->delete('Auth');
+		$this->controller->redirect($this->controller->Auth->logoutRedirect);
+		
+	}
+	
+			
+}
 	
 ?>

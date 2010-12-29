@@ -23,7 +23,7 @@ class UacProfilesController extends UacAppController {
 		
 		if (!empty($this->data)) {
 			
-			if ($this->Account->update($this->data)) {
+			if ($this->Account->updateProfile($this->data)) {
 			
 				$this->Session->setFlash(__('Your profile was saved', true));
 				$this->redirect(Configure::read('User.edit.redirect'));

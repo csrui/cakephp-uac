@@ -1,6 +1,8 @@
 <?php
 
 $config['User.edit.redirect'] = '/';
+$config['User.signup.redirect'] = '/';
+$config['User.signup.agreement'] = '/page/user_agreement';
 
 $config['User.profile.genders'] = array(
 	'Unspecified' => 'Unspecified',
@@ -10,6 +12,8 @@ $config['User.profile.genders'] = array(
 
 $config['User.profile.meta'] = array(
 );
+
+$config['User.cookie.lifetime'] = '+2 days';
 
 $config['App.languages'] = Set::merge(
 	Configure::read('App.languages'),
