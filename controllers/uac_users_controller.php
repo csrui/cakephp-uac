@@ -5,7 +5,7 @@ class UacUsersController extends UacAppController {
 	function beforeFilter() {
 		
 		parent::beforeFilter();
-		$this->Auth->allow('signup', 'signin', 'password_recover');
+		$this->Auth->allow('signup', 'signin', 'password_recover', 'password_change');
 		$this->Auth->authenticate = $this->UacUser;
 		
 	}
@@ -100,37 +100,17 @@ class UacUsersController extends UacAppController {
 				$this->UacUser->saveField('password_change_hash', null);
 
 				$this->Session->setFlash(__('Your password has been changed', true));
-				$this->redirect(array('controller' => 'uac_profiles', 'action' => 'edit'));
 
-				/*
-				$this->set(array(
-                       #'username' => $user['UacUser']['username'],
-                       'password' => $user['UacUser']['password'],
-				));
-
-				# SEND EMAIL
-			
-				if (Configure::read('debug') > 0) $this->Email->delivery = 'debug';
-			
-				$this->Email->smtpOptions = Configure::read('Email');
-				$this->Email->from = sprintf('%s <%s>', Configure::read('App.name'), Configure::read('App.email'));
-				$this->Email->subject = 'Here\'s your account login to ' . Configure::read('App.name');
-				$this->Email->to = $user['UacUser']['email'];
-				$this->Email->template = $this->action;
-				$this->Email->sendAs = 'html';
-
-				if (!$this->Email->send()) {
+				# SEND EMAIL			
+				$this->EmailQueue->to = $user['UacUser']['email'];
+				$this->EmailQueue->from = Configure::read('Email.username');
+				$this->EmailQueue->subject = sprintf('%s %s', Configure::read('App.name'), __('new password', true));
+				$this->EmailQueue->template = $this->action;
+				$this->EmailQueue->sendAs = 'both';
+				$this->EmailQueue->delivery = 'db';
+				$this->EmailQueue->send();
 				
-					$this->log("Error sending email '{$this->action}'", LOG_ERROR);
-					$this->log($this->Email->smtpError, LOG_ERROR);
-					$this->Session->setFlash(sprintf(__('There was an error sending the e-mail, please contact us at %s', true), Configure::read('App.email')));
-				
-				} else {
-				
-					$this->redirect(Configure::read('User.edit.redirect'));
-				
-				}
-				*/
+				$this->redirect(Configure::read('User.edit.redirect'));
 
 			}
 
@@ -148,55 +128,29 @@ class UacUsersController extends UacAppController {
 	 */
 	function password_recover() {
 		
-		#TODO Refactor code to Account Component
+		# PREVENT LOGGED IN USERS FROM ACCESSING THIS
+		if (!is_null($this->Auth->user())) {
+			$this->Session->setFlash(__('', true));
+			$this->redirect($this->referer());
+		}
 		
-		if (!empty($this->data)) {
+		if (empty($this->data)) return;
 			
-			$this->UacUser->Contain();
-			$user = $this->UacUser->findByEmail($this->data['UacUser']['email']);
-			
-			if (empty($user)) {
-			
-				$this->UacUser->invalidate('email', __('Sorry, we cant find any account with that e-mail address', true));
-				return;
-				
-			}
-			
-			# GENERATE NEW HASH AND SAVE IT
-			$this->UacUser->id = $user['UacUser']['id'];
-			$new_hash = Security::hash($user['UacUser']['email'].time(), null, true);
-			$this->UacUser->saveField('password_change_hash', $new_hash);
-			
-			$this->set(array(
-                   'email' => $user['UacUser']['email'],
-                   'new_hash' => $new_hash,
-			));
-
-			# SEND EMAIL
-			
-			if (Configure::read('debug') > 0) $this->Email->delivery = 'debug';
-			
-			$this->Email->smtpOptions = Configure::read('Email');
-			$this->Email->from = sprintf('%s <%s>', Configure::read('App.name'), Configure::read('App.email'));
-			$this->Email->subject = __('Password recovery from ', true) . Configure::read('App.name');
-			$this->Email->to = $user['UacUser']['email'];
-			$this->Email->template = $this->action;
-			$this->Email->sendAs = 'html';
-
-			if (!$this->Email->send()) {
-				
-				$this->log("Error sending email '{$this->action}'", LOG_ERROR);
-				$this->log($this->Email->smtpError, LOG_ERROR);
-				$this->Session->setFlash(sprintf(__('There was an error sending the e-mail, please contact us at %s', true), Configure::read('App.email')));
-				
-			} else {
-				
-				$this->Session->setFlash(__('You will recieve an e-mail with a code shortly', true));
-				$this->redirect('/');
-				
-			}
+		$this->UacUser->Contain();
+		$user = $this->UacUser->findByEmail($this->data['UacUser']['email']);
+		
+		if (empty($user)) {
+		
+			$this->UacUser->invalidate('email', __('Sorry, we cant find any account with that e-mail address', true));
+			return;
 			
 		}
+		
+		# SEND AN EMAIL SO THE USER CAN CHANGE THE PASSWORD
+		$this->Account->password_recover($user);
+				
+		$this->Session->setFlash(__('You will receive an e-mail with a code shortly', true));
+		$this->redirect('/');
 				
 	}
 

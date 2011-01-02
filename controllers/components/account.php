@@ -130,6 +130,41 @@ class AccountComponent extends Object {
 	}
 	
 	/**
+	 * Send an e-mail to the user to reset the password
+	 *
+	 * @param array $user 
+	 * @return void
+	 * @author Rui Cruz
+	 */
+	function password_recover($user) {		
+		
+		# GENERATE NEW HASH AND SAVE IT
+		$this->controller->UacUser->id = $user['UacUser']['id'];
+		$new_hash = Security::hash($user['UacUser']['email'].time(), null, true);
+		$this->controller->UacUser->saveField('password_change_hash', $new_hash);
+
+		# SEND AN EMAIL WITH AN URL TO RESET THE PASSWORD
+		$hashed_url = Router::url(array('plugin' => null, 'controller' => 'users', 'action' => 'password_change', $new_hash));
+		
+		$this->controller->set(array(
+			'email' => $user['UacUser']['email'],
+			'new_hash' => $new_hash,
+			'hashed_url' => $hashed_url
+		));
+
+		$this->EmailQueue->to = $user['UacUser']['email'];
+		$this->EmailQueue->from = Configure::read('Email.username');
+		$this->EmailQueue->subject = sprintf('%s %s', Configure::read('App.name'), __('password recovery', true));
+		$this->EmailQueue->template = $this->controller->action;
+		$this->EmailQueue->sendAs = 'both';
+		$this->EmailQueue->delivery = 'db';
+		$this->EmailQueue->send();		
+		
+	}
+	
+	
+	
+	/**
 	 * 
 	 * Search for at least one role in the user session
 	 * @param unknown_type $needed_roles
