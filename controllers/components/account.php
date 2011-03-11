@@ -97,9 +97,19 @@ class AccountComponent extends Object {
 	 * @return array
 	 * @author Rui Cruz
 	 */
-	function user() {
+	function user($property = null) {
 		
-		return $this->controller->Session->read('Auth');
+		$auth = $this->controller->Session->read('Auth');
+		
+		if (is_null($property)) {
+			
+			return $auth;
+			
+		} else {
+			
+			return Set::extract($auth, $property);
+			
+		}
 		
 	}
 	
