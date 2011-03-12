@@ -32,15 +32,15 @@ class AccountComponent extends Object {
 	 */
 	public function user($property = null) {
 		
-		$auth = $this->controller->Session->read('Auth');
+		$auth_data = $this->controller->Session->read('Auth');
 		
 		if (is_null($property)) {
 			
-			return $auth;
+			return $auth_data;
 			
 		} else {
 			
-			return Set::extract($auth, $property);
+			return Set::extract($property, $auth_data);
 			
 		}
 		
@@ -52,14 +52,23 @@ class AccountComponent extends Object {
 	 * @return bol
 	 * @author Rui Cruz
 	 */
-	function signin() {
+	function afterSignin() {
 		
 		if ($this->controller->Auth->user()) {
 
-			# GET CURRENT SCOPE CONDITIONS FROM AUTH COMPONENT
-			$conditions = $this->controller->Auth->data['UacUser'];
+			# CLEAN UP AFTER SIGNUP / LOGIN
+			unset($this->controller->Auth->data['UacUser']['plain_password']);
+
 			$this->controller->UacUser->Contain('UacProfile', 'UacRole');
-			$this->data = $this->controller->UacUser->find('first', compact('conditions'));
+			$this->data = $this->controller->UacUser->findById($this->user('UacUser.id'));
+
+			if (empty($this->data)) {
+
+				$this->log('Account::afterSignin is failing');
+				$this->log($conditions);
+				return false;
+
+			}
 
 			unset($conditions[$this->settings['cookie_name']]);
 

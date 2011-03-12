@@ -81,8 +81,8 @@ class UacProfile extends UacAppModel {
 			
 		}
 	
-		$this->create($data);
-		return $this->save($this->data);
+		$this->create($data[$this->alias]);
+		return $this->save($this->data[$this->alias]);
 			
 	}	
 	

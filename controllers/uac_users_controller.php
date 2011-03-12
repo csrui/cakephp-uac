@@ -9,13 +9,19 @@ class UacUsersController extends UacAppController {
 		$this->Auth->allow('signup', 'signin', 'password_recover', 'password_change');
 		$this->Auth->authenticate = $this->UacUser;
 		
+		if (in_array($this->action, array('signup', 'signin')) && $this->Auth->user()) {
+			
+			$this->redirect($this->Auth->loginRedirect);
+			
+		}
+		
 	}
 	
 	
 	public function signup() {
 		
 		if (!empty($this->data)) {
-		
+					
 			if ($this->Account->signup()) {
 			
 				$this->Session->setFlash(__('Your account is created', true));
@@ -27,7 +33,7 @@ class UacUsersController extends UacAppController {
 				if ($signed_in !== true) {
 					
 					$this->Session->setFlash(__('Ok, now you can login', true));
-					$this->redirect(array('controller' => $this->name, 'action' => 'signin'));
+					$this->redirect($this->Auth->loginAction);
 					
 				}
 			
@@ -50,6 +56,7 @@ class UacUsersController extends UacAppController {
 			unset($this->data['UacUser']['plain_password']);
 			
 			if ($this->Auth->login($this->data)) {
+				$this->Account->afterSignin();
 				$this->redirect($this->Auth->loginRedirect);
 				return true;
 			}
@@ -59,7 +66,7 @@ class UacUsersController extends UacAppController {
 		
 		if (!empty($this->data)) {
 		
-			if ($this->Account->signin()) {
+			if ($this->Account->afterSignin()) {
 			
 				$this->redirect($this->Auth->loginRedirect);
 				return true;
