@@ -5,20 +5,31 @@ class UacUsersController extends UacAppController {
 	function beforeFilter() {
 		
 		parent::beforeFilter();
+		
 		$this->Auth->allow('signup', 'signin', 'password_recover', 'password_change');
 		$this->Auth->authenticate = $this->UacUser;
 		
 	}
 	
 	
-	function signup() {
+	public function signup() {
 		
 		if (!empty($this->data)) {
 		
 			if ($this->Account->signup()) {
 			
-				$this->Session->setFlash(__('Your account is created', true));				
-				$this->redirect(Configure::read('User.signup.redirect'));
+				$this->Session->setFlash(__('Your account is created', true));
+				
+				$this->data['UacUser']['plain_password'] = $this->data['UacUser']['password'];
+								
+				$signed_in = $this->requestAction(array('controller' => $this->name, 'action' => 'signin'), array('data' => $this->data));
+				
+				if ($signed_in !== true) {
+					
+					$this->Session->setFlash(__('Ok, now you can login', true));
+					$this->redirect(array('controller' => $this->name, 'action' => 'signin'));
+					
+				}
 			
 			} else {
 			
@@ -31,12 +42,27 @@ class UacUsersController extends UacAppController {
 	}
 	
 	function signin() {
+
+		# AUTO LOGIN IF SIGNING UP
+		if (isset($this->data['UacUser']['plain_password'])) {
+			
+			$this->data['UacUser']['password'] = $this->data['UacUser']['plain_password'];
+			unset($this->data['UacUser']['plain_password']);
+			
+			if ($this->Auth->login($this->data)) {
+				$this->redirect($this->Auth->loginRedirect);
+				return true;
+			}
+			return false;
+			
+		}
 		
 		if (!empty($this->data)) {
 		
 			if ($this->Account->signin()) {
 			
 				$this->redirect($this->Auth->loginRedirect);
+				return true;
 				
 			} else {
 	
@@ -45,6 +71,8 @@ class UacUsersController extends UacAppController {
 			}
 			
 		}
+		
+		return false;
 		
 	}
 	

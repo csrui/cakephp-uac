@@ -45,36 +45,21 @@ class UacUser extends UacAppModel {
 	);
 	
 	
-	function afterSave($created) {
+	public function signUp($data) {
 		
-		parent::afterSave($created);
+		$this->create($data);
 		
-		if ($created === true) {
+		if ($this->save($data) !== false) {
 			
-			$this->__generateProfile();
+			return $this->UacProfile->signUpProfile($data);
 			
 		}
 		
+		return false;
+		
 	}
 	
-	/**
-	 * Inserts a new linked record into UacProfile
-	 *
-	 * @return void
-	 * @author Rui Cruz
-	 */
-	private function __generateProfile() {
-		
-		$this->data['UacProfile']['uac_user_id'] = $this->id;
 
-		$email = explode('@', $this->data['UacUser']['email']);
-		$this->data['UacProfile']['screen_name'] = $email[0];
-		
-		$this->UacProfile->create();
-		return $this->UacProfile->save($this->data);
-				
-	}
-	
 	/**
 	 * Compares two password strings to see if they are equal
 	 *

@@ -62,5 +62,29 @@ class UacProfile extends UacAppModel {
 		)
 	);	
 	
+	
+	/**
+	 * Generates a new profile and tries to guess screen_name if not provided
+	 *
+	 * @param array $data 
+	 * @return bol
+	 * @author Rui Cruz
+	 */
+	public function signUpProfile($data) {
+	
+		$data['UacProfile']['uac_user_id'] = $this->UacUser->id;
+		
+		if (empty($data['UacProfile']['screen_name'])) {
+
+			$email = explode('@', $data['UacUser']['email']);
+			$data['UacProfile']['screen_name'] = $email[0];
+			
+		}
+	
+		$this->create($data);
+		return $this->save($this->data);
+			
+	}	
+	
 }
 ?>

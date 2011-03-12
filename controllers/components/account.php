@@ -24,13 +24,41 @@ class AccountComponent extends Object {
 		
 	}
 	
+	/**
+	 * Return Auth session
+	 *
+	 * @return array
+	 * @author Rui Cruz
+	 */
+	public function user($property = null) {
+		
+		$auth = $this->controller->Session->read('Auth');
+		
+		if (is_null($property)) {
+			
+			return $auth;
+			
+		} else {
+			
+			return Set::extract($auth, $property);
+			
+		}
+		
+	}	
+	
+	/**
+	 * After signin in, we add extra data to the current session
+	 *
+	 * @return bol
+	 * @author Rui Cruz
+	 */
 	function signin() {
 		
 		if ($this->controller->Auth->user()) {
 
 			# GET CURRENT SCOPE CONDITIONS FROM AUTH COMPONENT
 			$conditions = $this->controller->Auth->data['UacUser'];
-			$this->controller->UacUser->Contain('UacProfile','UacRole');
+			$this->controller->UacUser->Contain('UacProfile', 'UacRole');
 			$this->data = $this->controller->UacUser->find('first', compact('conditions'));
 
 			unset($conditions[$this->settings['cookie_name']]);
@@ -57,12 +85,18 @@ class AccountComponent extends Object {
 		
 	}
 	
-	function signup() {
+	
+	/**
+	 * Handles signup data. Created a new User account and a new Profile
+	 *
+	 * @return bol
+	 * @author Rui Cruz
+	 */
+	public function signup() {
 
 		if (!empty($this->controller->data)) {
 			
-			$this->controller->UacUser->create($this->controller->data);			
-			if ($this->controller->UacUser->save($this->controller->data)) {
+			if ($this->controller->UacUser->signUp($this->controller->data)) {
 				
 				$this->afterSignup();
 				return true;
@@ -79,7 +113,8 @@ class AccountComponent extends Object {
 
 	}
 	
-	function afterSignup() {
+	
+	private function afterSignup() {
 		
 		$this->EmailQueue->to = $this->controller->data['UacUser']['email'];
 		$this->EmailQueue->from = Configure::read('Email.username');
@@ -92,41 +127,17 @@ class AccountComponent extends Object {
 	}
 	
 	/**
-	 * Return Auth session
-	 *
-	 * @return array
-	 * @author Rui Cruz
-	 */
-	function user($property = null) {
-		
-		$auth = $this->controller->Session->read('Auth');
-		
-		if (is_null($property)) {
-			
-			return $auth;
-			
-		} else {
-			
-			return Set::extract($auth, $property);
-			
-		}
-		
-	}
-	
-	/**
 	 * Saves profiles changes and updates Auth session data
 	 *
 	 * @param array $data 
 	 * @return mixed
 	 * @author Rui Cruz
 	 */
-	function updateProfile($data) {
+	public function updateProfile($data) {
 		
 		if (empty($data)) return false;
 		
-		$result = $this->controller->UacProfile->save($data);
-		
-		if ($result !== false) {
+		if ($this->controller->UacProfile->save($data) !== false) {
 			
 			$new_session_data = $this->user();
 			$new_session_data = Set::merge($new_session_data, $data);
