@@ -50,6 +50,19 @@ class AccountComponent extends Object {
 	}	
 	
 	/**
+	 * Gets the current user offset from the current server
+	 *
+	 * @return int
+	 * @author Rui Cruz
+	 */
+	public function offset() {
+		
+		$timezone = date_create('now', timezone_open($this->Account->user('UacProfile.timezone')));
+		return $timezone->getOffset();		
+		
+	}
+	
+	/**
 	 * After signin in, we add extra data to the current session
 	 *
 	 * @return bol

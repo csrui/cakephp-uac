@@ -1,19 +1,10 @@
 <div class="images form">
-<?php echo $this->Form->create('UacImage', array('type' => 'file'));?>
-	<fieldset>
- 		<legend><?php __('Add Image'); ?></legend>
-	<?php
-		echo $this->Form->input('filename', array('type' => 'file'));
-		echo $this->Form->input('avatar', array('label' => 'Set as default avatar', 'type' => 'checkbox'));
-		echo $this->Form->input('notes');
-	?>
-	</fieldset>
-<?php echo $this->Form->end(__('Submit', true));?>
-</div>
-<div class="actions">
-	<h3><?php __('Actions'); ?></h3>
-	<ul>
+	<h2><?php __('Upload a picture') ?></h2>
 
-		<li><?php echo $this->Html->link(__('List Images', true), array('action' => 'index'));?></li>
-	</ul>
+	<?php echo $this->Form->create('UacImage', array('type' => 'file'));?>
+		<?php echo $this->Form->input('filename', array('type' => 'file')); ?>
+		<?php echo $this->Form->input('avatar', array('label' => 'Set as default avatar', 'type' => 'checkbox')); ?>
+		<?php echo $this->Form->input('notes'); ?>
+	<?php echo $this->Form->end(__('Upload', true));?>
+	
 </div>

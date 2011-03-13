@@ -21,6 +21,16 @@ class UacProfilesController extends UacAppController {
 		
 		$this->set('genders', Configure::read('User.profile.genders'));
 		
+		$timezones = array();
+		$timezone_identifiers = DateTimeZone::listAbbreviations();
+		foreach ($timezone_identifiers as $key => $zones) {
+			foreach($zones as $value) {				
+				$timezones[$value['timezone_id']] = $value['timezone_id'];
+			}
+		}
+		ksort($timezones);
+		$this->set('timezones', $timezones);		
+		
 		if (!empty($this->data)) {
 			
 			if ($this->Account->updateProfile($this->data)) {
