@@ -2,7 +2,10 @@
 
 class AccountComponent extends Object {
 	
-	var $components = array('Facebook.Connect', 'CronMailer.EmailQueue');
+	var $components = array(
+		'CronMailer.EmailQueue',
+		'Uac.Gravatar'
+	);
 	
 	var $controller = null;
 	
@@ -124,6 +127,11 @@ class AccountComponent extends Object {
 	
 	
 	private function afterSignup() {
+		
+		#TODO Try to set profile image using a gravatar
+		#var_dump($this->Gravatar->getImage($this->controller->data['UacUser']['email'], 80, GravatarImageSet::FOUROFOUR, GravatarRating::X));
+		
+		
 		
 		$this->EmailQueue->to = $this->controller->data['UacUser']['email'];
 		$this->EmailQueue->from = Configure::read('Email.username');

@@ -6,10 +6,10 @@ class UacUsersController extends UacAppController {
 		
 		parent::beforeFilter();
 		
-		$this->Auth->allow('signup', 'signin', 'password_recover', 'password_change');
+		$this->Auth->allow('social_signin', 'signup', 'signin', 'password_recover', 'password_change');
 		$this->Auth->authenticate = $this->UacUser;
 		
-		if (in_array($this->action, array('signup', 'signin')) && $this->Auth->user()) {
+		if (in_array($this->action, array('social_sigin', 'signup', 'signin')) && $this->Auth->user()) {
 			
 			$this->redirect($this->Auth->loginRedirect);
 			
@@ -17,6 +17,72 @@ class UacUsersController extends UacAppController {
 		
 	}
 	
+	/**
+	 * Handle Gigya sigin
+	 *
+	 * @return void
+	 * @author Rui Cruz
+	 */
+	public function social_signin() {
+		
+		$this->autoRender = false;
+		
+		if (empty($_GET)) {
+			$this->Session->setFlash(__('Unable to authenticate you using social networks', true));
+			$this->redirect($this->Auth->loginAction);
+			return false;
+		}
+		
+		$uid = $_GET['UID'];
+		
+		# FIND EXISTING USER
+		
+		$this->data = $this->UacUser->UacGigya->findById($uid);
+				
+		if ($this->data !== true) {
+			
+			$this->data['UacGigya'] = array(
+				'id' => $_GET['UID'],
+				'provider' => $_GET['provider'],
+				'data' => serialize($_GET)
+			);
+			
+			$this->data['UacUser'] = array(
+				'email' => $_GET['email'],
+				'password' => '--social-network--'
+			);
+			
+			$this->data['UacProfile'] = array(
+				'screen_name' => $_GET['nickname']
+			);
+
+			$this->Account->signUp();
+			
+			$this->data['UacGigya']['uac_user_id'] = $this->UacUser->id;			
+			$this->UacUser->UacGigya->save($this->data);
+			
+		}
+		
+		# MUST ADD PASSWORD OR AUTH::LOGIN WONT WORK
+		$this->data['UacUser']['password'] = '--social-network--';
+		
+		# AUTHENTICATE AND REDIRECT
+		if ($this->Auth->login($this->data['UacUser'])) {
+			
+			$this->Account->afterSignin();
+			$this->redirect($this->Auth->loginRedirect);
+			return true;
+			
+		} else {
+			
+			$this->log('Unable to Auth the user from a social network:');
+			$this->log($this->data);
+			$this->Session->setFlash(__('Unable to authenticate you using social networks', true));
+			$this->redirect($this->Auth->loginAction);
+			
+		}
+		
+	}
 	
 	public function signup() {
 		
@@ -47,7 +113,7 @@ class UacUsersController extends UacAppController {
 		
 	}
 	
-	function signin() {
+	public function signin() {
 
 		# AUTO LOGIN IF SIGNING UP
 		if (isset($this->data['UacUser']['plain_password'])) {

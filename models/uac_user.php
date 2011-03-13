@@ -38,6 +38,14 @@ class UacUser extends UacAppModel {
 		)
 	);
 	
+	var $hasMany = array(
+		'UacGigya' => array(
+			'className' => 'Uac.UacGigya',
+			'foreignKey' => 'uac_user_id',
+			'dependent' => true
+		)
+	);
+	
 	var $hasAndBelongsToMany = array(
 		'UacRole' => array(
 			'className' => 'Uac.UacRole'
