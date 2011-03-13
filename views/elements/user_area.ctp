@@ -13,7 +13,7 @@
     	if (is_array(configure::read('User.Area.urls'))) {
 
         	foreach(configure::read('User.Area.urls') as $name => $url) {
-        		$url = sprintf($url, $uac->get('username'));   
+        		$url = sprintf($url, $uac->get('UacUser.id'));   
             	echo '<li>' . $this->Html->link($name, $url) . '</li>';
         	}
         	

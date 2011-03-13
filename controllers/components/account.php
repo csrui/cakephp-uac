@@ -153,6 +153,13 @@ class AccountComponent extends Object {
 	public function updateProfile($data) {
 		
 		if (empty($data)) return false;
+
+		# IF SPACIAL DATA IS EMPTY WE SHOULD NOT UPDATE
+		if (!empty($data['UacProfile']['location'])) {
+			
+			$data['UacProfile']['location'] = DboSource::expression(sprintf('POINT(%s)', $data['UacProfile']['location']));
+			
+		}
 		
 		if ($this->controller->UacProfile->save($data) !== false) {
 			
@@ -160,10 +167,11 @@ class AccountComponent extends Object {
 			$new_session_data = Set::merge($new_session_data, $data);
 			
 			$this->controller->Session->write('Auth', $new_session_data);
+			return true;
 			
 		}
 		
-		return $result;
+		return false;
 		
 	}
 	
