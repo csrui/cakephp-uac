@@ -27,7 +27,7 @@
 
 	<p align="center">
 		<?php __('Have an account?') ?> 
-    	<?php echo $this->Html->link(__('Login', true), '/uac/uac_users/signin', array('class' => 'login')) ?> 
+    	<?php echo $this->Html->link(__('Log in', true), '/uac/uac_users/signin', array('class' => 'login')) ?> 
 
 		<?php echo $this->Html->link(__('Sign up', true), '/uac/uac_users/signup', array('class' => 'register')) ?>
 	</p>

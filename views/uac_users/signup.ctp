@@ -18,7 +18,7 @@
 	
 	<span class="grid_5 omega">
 
-		<h2><?php __('Sign in') ?></h2>
+		<h2><?php __('Using other providers') ?></h2>
 		<p><?php __('It\'s fast and easy') ?></p>
 
 		<?php echo $this->element('gigya_signin'); ?>	

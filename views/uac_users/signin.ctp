@@ -1,14 +1,10 @@
-<?php
-
-echo $this->Html->scriptBlock('gigya.services.socialize.logout(conf);');
-
-?>
+<?php echo $this->Html->scriptBlock('gigya.services.socialize.logout(conf);'); ?>
 
 <div class="users signin">
 	
 	<span class="grid_5 alpha">
 		
-		<h2><?php __('Login') ?></h2>
+		<h2><?php __('Log in') ?></h2>
 		<p><?php __('Please login to continue') ?></p>
 		
 		<?php
@@ -23,7 +19,7 @@ echo $this->Html->scriptBlock('gigya.services.socialize.logout(conf);');
 
 	<span class="grid_5 omega">
 
-		<h2><?php __('Sign in') ?></h2>
+		<h2><?php __('Using other providers') ?></h2>
 		<p><?php __('It\'s fast and easy') ?></p>
 
 		<?php echo $this->element('gigya_signin'); ?>	
