@@ -1,4 +1,10 @@
 <?php
+/**
+ * undocumented class
+ *
+ * @package Uac
+ * @author Rui Cruz
+ */
 class UacProfileMeta extends UacAppModel {
 	
 	var $belongsTo = array(

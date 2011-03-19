@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * undocumented class
+ *
+ * @package Uac
+ * @author Rui Cruz
+ */
 class UacImagesController extends UacAppController {
 	
 	
@@ -13,7 +18,7 @@ class UacImagesController extends UacAppController {
 	function index() {
 		
 		$this->UacImage->recursive = -1;
-		$conditions = array('UacImage.uac_profile_id' => $this->Auth->user('id'));
+		$conditions = array('UacImage.uac_profile_id' => $this->Account->id());
 		$this->set('uac_images', $this->paginate($conditions));
 		
 	}
@@ -22,7 +27,7 @@ class UacImagesController extends UacAppController {
 		
 		if (!empty($this->data)) {
 			$this->UacImage->create();
-			$this->data['UacImage']['uac_profile_id'] = $this->Auth->user('id');
+			$this->data['UacImage']['uac_profile_id'] = $this->Account->id();
 			if ($this->UacImage->save($this->data)) {
 				
 				if ($this->data['UacImage']['avatar'] == 1) {

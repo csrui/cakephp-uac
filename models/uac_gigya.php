@@ -1,4 +1,10 @@
 <?php
+/**
+ * undocumented class
+ *
+ * @package Uac
+ * @author Rui Cruz
+ */
 class UacGigya extends AppModel {
 	var $name = 'UacGigya';
 	var $useTable = 'uac_gigya';

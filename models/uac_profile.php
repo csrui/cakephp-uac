@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * undocumented class
+ *
+ * @package Uac
+ * @author Rui Cruz
+ */
 class UacProfile extends UacAppModel {
 	
 	var $name = 'UacProfile';

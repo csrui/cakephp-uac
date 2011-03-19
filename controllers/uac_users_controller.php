@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * undocumented class
+ *
+ * @package Uac
+ * @author Rui Cruz
+ */
 class UacUsersController extends UacAppController {
 	
 	function beforeFilter() {
@@ -163,7 +168,7 @@ class UacUsersController extends UacAppController {
 		if (!is_null($this->Auth->user())) {
 			
 			$this->UacUser->Contain();
-			$user = $this->UacUser->findById($this->Auth->user('id'));
+			$user = $this->UacUser->findById($this->Account->id());
 			
 		} elseif (!is_null($password_hash_code)) {
 			

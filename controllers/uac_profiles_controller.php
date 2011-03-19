@@ -1,4 +1,10 @@
 <?php
+/**
+ * undocumented class
+ *
+ * @package Uac
+ * @author Rui Cruz
+ */
 class UacProfilesController extends UacAppController {
 
 	var $name = 'UacProfiles';
@@ -47,7 +53,7 @@ class UacProfilesController extends UacAppController {
 		} else {
 			
 			$this->data = $this->Account->user();
-			$this->data = Set::merge($this->data, $this->UacProfile->UacProfileMeta->findByUacProfileId($this->Auth->user('id')));
+			$this->data = Set::merge($this->data, $this->UacProfile->UacProfileMeta->findByUacProfileId($this->Account->id()));
 
 		}
 		
@@ -55,7 +61,7 @@ class UacProfilesController extends UacAppController {
 	
 	function view($id = null) {
 		
-		$user_id = empty($id) ? $this->Auth->user('id') : $id;
+		$user_id = empty($id) ? $this->Account->id() : $id;
 		
 		$this->UacProfile->Contain('UacProfileMeta');
 		$this->set('profile', $this->UacProfile->read(null, $user_id));

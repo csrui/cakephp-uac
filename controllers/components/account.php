@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * undocumented class
+ *
+ * @package Uac
+ * @author Rui Cruz
+ */
 class AccountComponent extends Object {
 	
 	var $components = array(
@@ -24,6 +29,18 @@ class AccountComponent extends Object {
 		$this->controller =& $controller;
 		
 		$this->settings = Set::merge($this->settings, $settings);
+		
+	}
+	
+	/**
+	 * Alias functions to get the associated model ID
+	 *
+	 * @return int
+	 * @author Rui Cruz
+	 */
+	public function id() {
+		
+		return $this->user('UacProfile.id');
 		
 	}
 	
