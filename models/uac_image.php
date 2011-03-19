@@ -36,10 +36,10 @@ class UacImage extends UacAppModel {
 				'thumbnails' => true,
 				'zoomCrop' => true,
 	            'thumbsizes' => array(
-	                'big' => array('width'=> 750, 'height'=> 750),
-					'medium' => array('width'=> 450, 'height'=> 450),
-					'small' => array('width'=> 250, 'height'=> 250),
-					'tiny' => array('width'=> 34, 'height'=> 34),
+	                'big' => array('width'=> 100, 'height'=> 100),
+					'medium' => array('width'=> 64, 'height'=> 64),
+					'small' => array('width'=> 34, 'height'=> 34),
+					'tiny' => array('width'=> 24, 'height'=> 24),
 	            ),
 	            'default' => 'default.jpg',
 	        )				 

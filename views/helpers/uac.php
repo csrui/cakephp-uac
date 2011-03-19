@@ -107,9 +107,9 @@ class UacHelper extends AppHelper {
 		$default_options = array('class' => 'avatar');
 		$options = Set::merge($options, $default_options);
 		
-		if (empty($avatar_file_name)) {
+		if (empty($avatar_file_name) || is_null($avatar_file_name)) {
 			
-			return $this->Html->image('profiles' . DS . "avatar_{$size}.png", $options);
+			return $this->Html->image(DS . 'profiles_default' . DS . 'thumb' . DS . $size . DS . 'default.jpg', $options);
 			
 		} else {
 		
