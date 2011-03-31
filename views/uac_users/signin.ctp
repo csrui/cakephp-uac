@@ -1,4 +1,9 @@
-<?php echo $this->Html->scriptBlock('gigya.services.socialize.logout(conf);'); ?>
+<?php echo $this->Html->script('gigya', array('inline' => false)) ?>
+<?php echo $this->Html->scriptBlock('
+$(document).ready(function(){
+	gigyaSignOut();
+	gigyaSignIn();
+});'); ?>
 
 <div class="users signin">
 	
@@ -22,7 +27,7 @@
 		<h2><?php __('Using other providers') ?></h2>
 		<p><?php __('It\'s fast and easy') ?></p>
 
-		<?php echo $this->element('gigya_signin'); ?>	
+		<div id="gigyaLoginDiv"></div>
 	</span>
 	
 	<span class="clear"></span>

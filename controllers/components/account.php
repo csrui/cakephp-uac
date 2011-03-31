@@ -134,22 +134,22 @@ class AccountComponent extends Object {
 	 * @return bol
 	 * @author Rui Cruz
 	 */
-	public function signup() {
+	public function signup(&$UserModel = null) {		
 
-		if (!empty($this->controller->data)) {
+		if (empty($this->controller->data)) return false;
+		
+		if (is_null($UserModel)) $UserModel = $this->controller->UacUser;
 			
-			if ($this->controller->UacUser->signUp($this->controller->data)) {
-				
-				$this->afterSignup();
-				return true;
-				
-			} else {
-				
-				unset($this->controller->data['UacUser']['password']);
-				
-				return false;
-				
-			}
+		if ($UserModel->signUp($this->controller->data)) {
+			
+			$this->afterSignup();
+			return true;
+			
+		} else {
+			
+			unset($this->controller->data['UacUser']['password']);
+			
+			return false;
 			
 		}
 

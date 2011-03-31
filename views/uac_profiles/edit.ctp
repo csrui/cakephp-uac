@@ -42,6 +42,7 @@
 	
 	<div id="profile-avatar">
 		<span class="photo"><?php echo $uac->avatar('medium', $uac->get('UacProfile.avatar_filename')) ?></span>
+		<br />
 		<?php echo $this->Html->link(__('Change picture', true), array('plugin' => 'uac', 'controller' => 'uac_images', 'action' => 'add'))?>
 	</div>
 
