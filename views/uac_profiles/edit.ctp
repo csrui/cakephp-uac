@@ -1,7 +1,7 @@
 <?php echo $this->Html->script('/uac/js/geolocation.js', array('inline' => false)); ?>
 <?php echo $this->Html->scriptBlock('
 
-	var userGeo = userGeo(false, {input : "UacProfileLocation", notification_container : "location-notification"});
+	var userGeo = userGeo(false, {input : "UacProfileLocation", UacProfileLocationName: "UacProfileLocationName", notification_container : "location-notification"});
 
 '); ?>
 
@@ -23,6 +23,7 @@
 	echo $this->Form->input('gender', array('options' => $genders));
 
 	echo $this->Form->hidden('location', array('value' => ''));
+	echo $this->Form->input('location_name', array('label' => __('Location', true), 'title' => __('Let your friends know where you are', true)));
 
 	echo $this->Form->input('timezone', array('type' => 'select', 'options' => $timezones, 'empty' => '--Please select--'));
 
