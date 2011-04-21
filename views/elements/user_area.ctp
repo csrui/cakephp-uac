@@ -4,9 +4,9 @@
 
 	<ul class="options">
 
-    	<li><?php __('Welcome') ?> <?php echo $this->Html->link($uac->get('UacProfile.screen_name'), array('plugin' => 'uac', 'controller' => 'uac_profiles', 'action' => 'view', $uac->get('UacProfile.id'))) ?></li>
+    	<li><?php echo $this->Html->link($uac->get('UacProfile.screen_name'), array('plugin' => 'uac', 'controller' => 'uac_profiles', 'action' => 'view', $uac->get('UacProfile.id'))) ?></li>
 	
-    	<li><?php echo $this->Html->link(__('Sign Out', true), '/uac/uac_users/signout') ?></li>  
+    	<li><?php echo $this->Html->link(__('Sign Out', true), array('plugin' => 'uac', 'controller' => 'uac_users', 'action' => 'signout')) ?></li>  
     
     <?php
     
@@ -27,9 +27,9 @@
 
 	<p align="center">
 		<?php __('Have an account?') ?> 
-    	<?php echo $this->Html->link(__('Log in', true), '/uac/uac_users/signin', array('class' => 'login')) ?> 
+    	<?php echo $this->Html->link(__('Log in', true), array('plugin' => 'uac', 'controller' => 'uac_users', 'action' => 'signin'), array('class' => 'login')) ?> 
 
-		<?php echo $this->Html->link(__('Sign up', true), '/uac/uac_users/signup', array('class' => 'register')) ?>
+		<?php echo $this->Html->link(__('Sign up', true), array('plugin' => 'uac', 'controller' => 'uac_users', 'action' => 'signup'), array('class' => 'register')) ?>
 	</p>
 
 <?php endif; ?>

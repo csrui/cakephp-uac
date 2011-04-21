@@ -35,7 +35,7 @@ class UacImagesController extends UacAppController {
 				}
 				
 				$this->Session->setFlash(__('The image has been saved', true));
-				$this->redirect(array('controller' => 'uac_profiles', 'action' => 'view'));
+				$this->redirect(array('controller' => 'uac_profiles', 'action' => 'edit',));
 
 			} else {
 				$this->Session->setFlash(__('The image could not be saved. Please, try again.', true));
