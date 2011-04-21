@@ -57,7 +57,7 @@ class UacImage extends UacAppModel {
     	# SET THE AVATAR ON THE USERS PROFILE
     	$this->UacProfile->id = $data['UacImage']['uac_profile_id'];
 		if ($this->UacProfile->saveField('avatar_filename', $avatar_filename)) {
-			return true;
+			return $avatar_filename;
 		}
 		
 		return false;

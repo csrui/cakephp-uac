@@ -31,7 +31,9 @@ class UacImagesController extends UacAppController {
 			if ($this->UacImage->save($this->data)) {
 				
 				if ($this->data['UacImage']['avatar'] == 1) {
-					$this->UacImage->setAvatar($this->data);					
+					
+					$this->Session->write('Auth.UacProfile.avatar_filename', $this->UacImage->setAvatar($this->data));
+					
 				}
 				
 				$this->Session->setFlash(__('The image has been saved', true));
