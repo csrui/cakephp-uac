@@ -103,7 +103,7 @@ class AccountComponent extends Object {
 
 			}
 
-			unset($conditions[$this->settings['cookie_name']]);
+			//unset($conditions[$this->settings['cookie_name']]);
 
 			# SET SESSION WITH ALL MODEL INFORMATION
 			foreach($this->data as $model_name => $model_data) {
