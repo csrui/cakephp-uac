@@ -118,6 +118,10 @@ class UacUsersController extends UacAppController {
 			
 			}
 			
+		} elseif (isset($_GET['activation_code'])) {
+			
+			$this->data['UacUser']['activation_code'] = $_GET['activation_code'];
+			
 		}
 		
 		unset($this->data['UacUser']['password']);
