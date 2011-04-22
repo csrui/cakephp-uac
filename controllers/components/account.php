@@ -286,8 +286,10 @@ class AccountComponent extends Object {
 	
 	function checkInvitation() {
 		
+		$result = false;
+		
 		# CHECK IF INVITATION IS MANDATORY
-		if (configure::read('App.invitation_only') == false) {
+		if (configure::read('App.invitation_only') !== true) {
 			
 			$result = true;
 			
@@ -299,27 +301,16 @@ class AccountComponent extends Object {
 		
 			define('INVITATION_CODE', $this->controller->data['UacUser']['activation_code']);
 			$InvitationCode = ClassRegistry::init('Invitation.InvitationCode');
-			$record = $InvitationCode->findByCode(INVITATION_CODE);
+			$result = $InvitationCode->lookup(INVITATION_CODE);
 			
-			if (!$record) {
+		}
 				
-				$result = false;
-				
-			} elseif ($record['InvitationCode']['amount'] == 0) {
-				
-				$result = false;
-				
-			} else {
-			
-				$InvitationCode->id = $record['InvitationCode']['id'];
-				$InvitationCode->saveField('amount', $record['InvitationCode']['amount']-1);
-				$result = true;
-				
-			}
-			
+		if ($result === false) {
+			$this->controller->UacUser->invalidate('activation_code', __('Invalid code', true));
 		}
 		
 		$this->controller->Session->write('Signup.invitation_ok', $result);
+		return $result;
 		
 	}
 	

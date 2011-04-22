@@ -17,6 +17,11 @@ $(document).ready(function(){
 		echo $this->Form->create('UacUser');
 		echo $this->Form->input('email');
 		echo $this->Form->input('password');
+		
+		if (Configure::read('App.invitation_only') == true) {
+			echo $this->Form->input('activation_code', array('title' => __('Insert your invitation code for access', true)));
+		}
+		
 		echo $this->Form->end(__('Sign up', true));
 
 		?>		

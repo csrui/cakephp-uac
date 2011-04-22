@@ -92,8 +92,12 @@ class UacUsersController extends UacAppController {
 	public function signup() {
 		
 		if (!empty($this->data)) {
-					
-			if ($this->Account->signup()) {
+			
+			if ($this->Account->checkInvitation() !== true) {
+				
+				$this->Session->setFlash(__('Sorry but the activation code is invalid or expired', true));				
+				
+			} elseif ($this->Account->signup()) {
 			
 				$this->Session->setFlash(__('Your account is created', true));
 				
@@ -110,11 +114,13 @@ class UacUsersController extends UacAppController {
 			
 			} else {
 			
-				$this->Session->setFlash(__('Sorry there\'s a problem and we cant create your account', true));
+				$this->Session->setFlash(__('Please review the form, we can\'t create your account', true));
 			
 			}
 			
 		}
+		
+		unset($this->data['UacUser']['password']);
 		
 	}
 	
