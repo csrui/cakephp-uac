@@ -7,4 +7,4 @@ requested a new password for your Planamatch.com account.
 
 <p><strong>To reset your password click on the following link:</strong></p>
 
-<p><?php echo $this->Html->link($hashed_url) ?></p>
+<p class="call-to-action"><?php echo $this->Html->link($hashed_url) ?></p>
