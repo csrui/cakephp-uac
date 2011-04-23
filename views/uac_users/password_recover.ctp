@@ -4,10 +4,10 @@
 
 	<span class="grid_7 alpha">
 
-
-		<p><?php __('In case you have forgotten your password, we can generate a new one and send it to you') ?>.
+		<p>
+			<?php __('If you have forgotten your password we can help you reset it') ?>.
 		    <br />
-		    <?php __('Please enter your <strong>e-mail</strong> so we can send your account login') ?>
+		    <?php __('Please enter your <strong>e-mail address</strong> and we will send you a link to change your password') ?>.
 		</p>
 		
 		<br />	
@@ -27,8 +27,8 @@
 		
 		<div class="box">
 			<p class="title"><?php __('Helpful hints') ?></p>
-			<p>You will receive an e-mail with a link to request a password change.</p>
-			<p><?php __('and please allow a few minutes to arrive.')?></p>
+			<p><?php __('You will receive an e-mail with a link to request a password change') ?></p>.
+			<p><?php __('Please allow a few minutes for the e-mail to arrive.')?></p>
 			
 			<p class="tip">
 			    <?php echo sprintf(__('Remember to add the address %s to your e-mail safelist', true), '<strong>'.Configure::read('Email.username').'</strong>') ?>
