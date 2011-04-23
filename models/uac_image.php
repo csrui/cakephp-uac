@@ -42,6 +42,9 @@ class UacImage extends UacAppModel {
 					'tiny' => array('width'=> 24, 'height'=> 24),
 	            ),
 	            'default' => 'default.jpg',
+				'phpThumb' => array(
+					'allow_src_above_docroot' => true
+				)
 	        )				 
 		)
     );	
