@@ -2,7 +2,7 @@
 
 <p>
 	You are receiving this e-mail because you or someone in your name 
-requested a new password for your Planamatch.com account.
+requested a new password for your <strong>Planamatch.com</strong> account.
 </p>
 
 <p><strong>To reset your password click on the following link:</strong></p>

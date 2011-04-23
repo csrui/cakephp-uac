@@ -225,11 +225,11 @@ class AccountComponent extends Object {
 		$this->controller->set(array(
 			'email' => $user['UacUser']['email'],
 			'new_hash' => $new_hash,
-			'hashed_url' => $hashed_url
+			'hashed_url' => configure::read('App.url') . $hashed_url
 		));
 
 		$this->EmailQueue->to = $user['UacUser']['email'];
-		$this->EmailQueue->from = Configure::read('Email.username');
+		$this->EmailQueue->from = sprintf('%s <%s>', Configure::read('App.name'), Configure::read('Email.username'));
 		$this->EmailQueue->subject = sprintf('%s %s', Configure::read('App.name'), __('password recovery', true));
 		$this->EmailQueue->template = $this->controller->action;
 		$this->EmailQueue->sendAs = 'both';
