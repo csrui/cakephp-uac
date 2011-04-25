@@ -1,0 +1,303 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2011-04-25 17:44+0100\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: /uac_app_controller.php:17
+msgid "Users"
+msgstr ""
+
+#: /controllers/uac_images_controller.php:13
+msgid "Profile photos"
+msgstr ""
+
+#: /controllers/uac_images_controller.php:39
+msgid "The image has been saved"
+msgstr ""
+
+#: /controllers/uac_images_controller.php:43
+msgid "The image could not be saved. Please, try again."
+msgstr ""
+
+#: /controllers/uac_images_controller.php:51
+msgid "Invalid id for image"
+msgstr ""
+
+#: /controllers/uac_images_controller.php:55
+msgid "Image deleted"
+msgstr ""
+
+#: /controllers/uac_images_controller.php:58
+msgid "Image was not deleted"
+msgstr ""
+
+#: /controllers/uac_profiles_controller.php:16
+msgid "Profile"
+msgstr ""
+
+#: /controllers/uac_profiles_controller.php:44
+msgid "Your profile was saved"
+msgstr ""
+
+#: /controllers/uac_profiles_controller.php:49
+msgid "There is an error on your profile"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:36;85
+msgid "Unable to authenticate you using social networks"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:98
+msgid "Sorry but the activation code is invalid or expired"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:102
+msgid "Your account is created"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:110
+msgid "Ok, now you can login"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:117
+msgid "Please review the form, we can't create your account"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:157
+msgid "No user found with the provided credentials"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:184
+msgid "Activate your new account"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:198
+msgid "Your account has been successfully activated"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:215
+#: /views/uac_users/password_change.ctp:1
+msgid "Change your password"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:243
+msgid "Please correct the errors below"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:244
+msgid "Your current password doesn't match"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:252
+msgid "Your password has been set"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:257
+msgid "new password"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:300
+msgid ""
+msgstr ""
+
+#: /controllers/uac_users_controller.php:311
+msgid "Sorry, we cant find any account with that e-mail address"
+msgstr ""
+
+#: /controllers/uac_users_controller.php:319
+msgid "You will receive an e-mail with a code shortly"
+msgstr ""
+
+#: /controllers/components/account.php:169
+msgid "New account activation"
+msgstr ""
+
+#: /controllers/components/account.php:271
+msgid "password recovery"
+msgstr ""
+
+#: /controllers/components/account.php:334
+msgid "You don't have permission to access that resource"
+msgstr ""
+
+#: /controllers/components/account.php:365
+msgid "Invalid code"
+msgstr ""
+
+#: /models/uac_user.php:90
+msgid "Passwords must match"
+msgstr ""
+
+#: /views/elements/user_area.ctp:11
+msgid "Sign Out"
+msgstr ""
+
+#: /views/elements/user_area.ctp:33
+msgid "Have an account?"
+msgstr ""
+
+#: /views/elements/user_area.ctp:34
+#: /views/uac_users/signin.ctp:12;20
+msgid "Log in"
+msgstr ""
+
+#: /views/elements/user_area.ctp:36
+#: /views/uac_users/signup.ctp:12;25
+msgid "Sign up"
+msgstr ""
+
+#: /views/uac_images/add.ctp:2
+msgid "Upload a picture"
+msgstr ""
+
+#: /views/uac_images/add.ctp:8
+msgid "Upload"
+msgstr ""
+
+#: /views/uac_images/index.ctp:2
+msgid "Profile Images"
+msgstr ""
+
+#: /views/uac_images/index.ctp:9
+msgid "Edit"
+msgstr ""
+
+#: /views/uac_images/index.ctp:10
+msgid "Delete"
+msgstr ""
+
+#: /views/uac_images/index.ctp:10
+msgid "Are you sure you want to delete # %s?"
+msgstr ""
+
+#: /views/uac_images/index.ctp:21
+msgid "Actions"
+msgstr ""
+
+#: /views/uac_images/index.ctp:23
+msgid "New Image"
+msgstr ""
+
+#: /views/uac_profiles/edit.ctp:8
+msgid "Edit your profile"
+msgstr ""
+
+#: /views/uac_profiles/edit.ctp:26
+msgid "Location"
+msgstr ""
+
+#: /views/uac_profiles/edit.ctp:26
+msgid "Let your friends know where you are"
+msgstr ""
+
+#: /views/uac_profiles/edit.ctp:35
+msgid "Can we check your location?<br />This allows you to find <strong>Venues</strong> and <strong>Friends</strong> near by."
+msgstr ""
+
+#: /views/uac_profiles/edit.ctp:37
+msgid "Save profile"
+msgstr ""
+
+#: /views/uac_profiles/edit.ctp:47
+msgid "Change picture"
+msgstr ""
+
+#: /views/uac_users/activate.ctp:1
+msgid "Activate your account"
+msgstr ""
+
+#: /views/uac_users/activate.ctp:7
+#: /views/uac_users/password_change.ctp:18
+msgid "For your new password use letters and numbers, this will make it more secure"
+msgstr ""
+
+#: /views/uac_users/activate.ctp:7
+#: /views/uac_users/password_change.ctp:18
+msgid "Your password has to be at least <strong>%s</strong> chars long"
+msgstr ""
+
+#: /views/uac_users/password_change.ctp:13
+msgid "For security please type your current password"
+msgstr ""
+
+#: /views/uac_users/password_recover.ctp:3
+msgid "Recover your password"
+msgstr ""
+
+#: /views/uac_users/password_recover.ctp:8
+msgid "If you have forgotten your password we can help you reset it"
+msgstr ""
+
+#: /views/uac_users/password_recover.ctp:10
+msgid "Please enter your <strong>e-mail address</strong> and we will send you a link to change your password"
+msgstr ""
+
+#: /views/uac_users/password_recover.ctp:19
+msgid "Request a password reset"
+msgstr ""
+
+#: /views/uac_users/password_recover.ctp:29
+msgid "Helpful hints"
+msgstr ""
+
+#: /views/uac_users/password_recover.ctp:30
+msgid "You will receive an e-mail with a link to request a password change"
+msgstr ""
+
+#: /views/uac_users/password_recover.ctp:31
+msgid "Please allow a few minutes for the e-mail to arrive."
+msgstr ""
+
+#: /views/uac_users/password_recover.ctp:34
+msgid "Remember to add the address %s to your e-mail safelist"
+msgstr ""
+
+#: /views/uac_users/signin.ctp:13
+msgid "Please login to continue"
+msgstr ""
+
+#: /views/uac_users/signin.ctp:27
+#: /views/uac_users/signup.ctp:33
+msgid "Using other providers"
+msgstr ""
+
+#: /views/uac_users/signin.ctp:28
+#: /views/uac_users/signup.ctp:34
+msgid "It's fast and easy"
+msgstr ""
+
+#: /views/uac_users/signin.ctp:34
+msgid "Having trouble? did you"
+msgstr ""
+
+#: /views/uac_users/signin.ctp:34
+msgid "forget your password?"
+msgstr ""
+
+#: /views/uac_users/signup.ctp:13
+msgid "Create a new account"
+msgstr ""
+
+#: /views/uac_users/signup.ctp:22
+msgid "Insert your invitation code for access"
+msgstr ""
+
+#: /views/uac_users/signup.ctp:40
+msgid "By signing up you agree with the %s"
+msgstr ""
+
+#: /views/uac_users/signup.ctp:40
+msgid "terms of usage"
+msgstr ""
+

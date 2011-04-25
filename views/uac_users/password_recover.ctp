@@ -16,7 +16,7 @@
 
 		    echo $this->Form->create('UacUser');
 			echo $this->Form->input('email');	
-		    echo $this->Form->end(__('Send your new password', true)); 
+		    echo $this->Form->end(__('Request a password reset', true)); 
 
 		?>
 

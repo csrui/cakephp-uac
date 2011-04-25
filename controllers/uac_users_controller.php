@@ -11,10 +11,10 @@ class UacUsersController extends UacAppController {
 		
 		parent::beforeFilter();
 		
-		$this->Auth->allow('social_signin', 'signup', 'signin', 'password_recover', 'password_change');
+		$this->Auth->allow('social_signin', 'signup', 'signin', 'activate', 'password_recover', 'password_change');
 		$this->Auth->authenticate = $this->UacUser;
 		
-		if (in_array($this->action, array('social_sigin', 'signup', 'signin')) && $this->Auth->user()) {
+		if (in_array($this->action, array('social_sigin', 'signup', 'signin', 'activate', 'password_recover')) && $this->Auth->user()) {
 			
 			$this->redirect($this->Auth->loginRedirect);
 			
@@ -61,7 +61,7 @@ class UacUsersController extends UacAppController {
 				'screen_name' => $_GET['nickname']
 			);
 
-			$this->Account->signUp();
+			$this->Account->signUp($this->data);
 			
 			$this->data['UacGigya']['uac_user_id'] = $this->UacUser->id;			
 			$this->UacUser->UacGigya->save($this->data);
@@ -74,7 +74,7 @@ class UacUsersController extends UacAppController {
 		# AUTHENTICATE AND REDIRECT
 		if ($this->Auth->login($this->data['UacUser'])) {
 			
-			$this->Account->afterSignin();
+			$this->Account->afterSignin($this->data);
 			$this->redirect($this->Auth->loginRedirect);
 			return true;
 			
@@ -93,11 +93,11 @@ class UacUsersController extends UacAppController {
 		
 		if (!empty($this->data)) {
 			
-			if ($this->Account->checkInvitation() !== true) {
+			if ($this->Account->checkInvitation($this->data) !== true) {
 				
 				$this->Session->setFlash(__('Sorry but the activation code is invalid or expired', true));				
 				
-			} elseif ($this->Account->signup()) {
+			} elseif ($this->Account->signup($this->data)) {
 			
 				$this->Session->setFlash(__('Your account is created', true));
 				
@@ -137,7 +137,7 @@ class UacUsersController extends UacAppController {
 			unset($this->data['UacUser']['plain_password']);
 			
 			if ($this->Auth->login($this->data)) {
-				$this->Account->afterSignin();
+				$this->Account->afterSignin($this->data);
 				$this->redirect($this->Auth->loginRedirect);
 				return true;
 			}
@@ -147,7 +147,7 @@ class UacUsersController extends UacAppController {
 		
 		if (!empty($this->data)) {
 		
-			if ($this->Account->afterSignin()) {
+			if ($this->Account->afterSignin($this->data)) {
 			
 				$this->redirect($this->Auth->loginRedirect);
 				return true;
@@ -171,14 +171,55 @@ class UacUsersController extends UacAppController {
 		
 	}
 	
+	
+	/**
+	 * Activate an unused account based on a hash code
+	 *
+	 * @param string $password_hash_code 
+	 * @return void
+	 * @author Rui Cruz
+	 */
+	public function activate($password_hash_code = null) {
+		
+		$this->set('title_for_layout', __('Activate your new account', true));
+		
+		$user = $this->UacUser->findByPasswordChangeHash($password_hash_code);
+		
+		# REDIRECT IF NO VALID SESSION OR PASSWORD HASH CODE 
+		if (!isset($user) || empty($user)) {
+			
+			$this->redirect($this->Auth->logout());
+			return false;
+			
+		}
+		
+		if (!empty($this->data) && $this->updatePassword($user)) {
+			
+			$this->Session->setFlash(__('Your account has been successfully activated', true));
+		
+			$user['UacUser']['password'] = $this->data['UacUser']['password'];
+		
+			if ($this->Auth->login($user)) {
+				$this->Account->afterSignin($user);
+				$this->redirect($this->Auth->loginRedirect);
+				return true;
+			}
+			return false;			
+			
+		}		
+		
+	}
+	
 	function password_change($password_hash_code = null) {
+		
+		$this->set('title_for_layout', __('Change your password', true));
 		
 		#TODO Refactor code to Account Component
 		
 		if (!is_null($this->Auth->user())) {
 			
 			$this->UacUser->Contain();
-			$user = $this->UacUser->findById($this->Account->id());
+			$user = $this->UacUser->findById($this->Account->user('UacUser.id'));
 			
 		} elseif (!is_null($password_hash_code)) {
 			
@@ -186,36 +227,29 @@ class UacUsersController extends UacAppController {
 			$user = $this->UacUser->findByPasswordChangeHash($password_hash_code);
 			
 		}
-		
+
 		# REDIRECT IF NO VALID SESSION OR PASSWORD HASH CODE 
 		if (!isset($user) || empty($user)) {
 			
 			$this->redirect($this->Auth->logout());
 			
 		}
-				
-		$this->set('title_for_layout', __('Change your password', true));
 
 		if (!empty($this->data)) {
-
+			
 			# COMPARE CURRENT PASSWORDS
 			if (is_null($password_hash_code) && ( $this->Auth->password($this->data['UacUser']['oldpassword']) != $user['UacUser']['password'] )) {
-		
+
 				$this->Session->setFlash(__('Please correct the errors below', true));
 				$this->UacUser->invalidate('oldpassword', __('Your current password doesn\'t match', true));
 				unset($this->data['UacUser']);
-				return;
-				
+				return false;
+
 			}
-
-			$user['UacUser']['password'] = $this->data['UacUser']['password'];
-
-			$this->UacUser->id = $user['UacUser']['id'];
-			if ($this->UacUser->saveField('password', $user['UacUser']['password'], true)) {
-				
-				$this->UacUser->saveField('password_change_hash', null);
-
-				$this->Session->setFlash(__('Your password has been changed', true));
+			
+			if ($this->updatePassword($user)) {
+			
+				$this->Session->setFlash(__('Your password has been set', true));
 
 				# SEND EMAIL			
 				$this->EmailQueue->to = $user['UacUser']['email'];
@@ -225,14 +259,31 @@ class UacUsersController extends UacAppController {
 				$this->EmailQueue->sendAs = 'both';
 				$this->EmailQueue->delivery = 'db';
 				$this->EmailQueue->send();
-				
+		
 				$this->redirect(Configure::read('User.edit.redirect'));
-
+			
 			}
 
 		}
 		
 		unset($this->data['UacUser']);
+		
+	}
+	
+	private function updatePassword($user) {
+		
+		$user['UacUser']['password'] = $this->data['UacUser']['password'];
+
+		$this->UacUser->id = $user['UacUser']['id'];
+		
+		if ($this->UacUser->saveField('password', $user['UacUser']['password'], true)) {
+			
+			$this->UacUser->saveField('password_change_hash', null);
+			return true;
+			
+		}
+		
+		return false;
 		
 	}
 	

@@ -14,6 +14,9 @@ class AccountComponent extends Object {
 	
 	var $controller = null;
 	
+	var $userModel = null;
+
+	
 	var $settings = array(
 		'cookie_name' => 'remember_me',
 		'roles_redirect' => '/'
@@ -28,7 +31,17 @@ class AccountComponent extends Object {
 		// saving the controller reference for later use
 		$this->controller =& $controller;
 		
+		if (isset($this->controller->UacUser)) {
+			$this->userModel = $this->controller->UacUser;
+		}
+		
 		$this->settings = Set::merge($this->settings, $settings);
+		
+	}
+	
+	public function setUserModel(&$userModel) {
+		
+		$this->userModel = $userModel; 
 		
 	}
 	
@@ -92,30 +105,26 @@ class AccountComponent extends Object {
 			# CLEAN UP AFTER SIGNUP / LOGIN
 			unset($this->controller->Auth->data['UacUser']['plain_password']);
 
-			$this->controller->UacUser->Contain('UacProfile', 'UacRole');
-			$this->data = $this->controller->UacUser->findById($this->user('UacUser.id'));
+			$this->userModel->Contain('UacProfile', 'UacRole');
+			$data = $this->userModel->findById($this->user('UacUser.id'));
 
-			if (empty($this->data)) {
+			if (empty($data)) {
 
 				$this->log('Account::afterSignin is failing');
-				$this->log($conditions);
 				return false;
 
 			}
 
-			//unset($conditions[$this->settings['cookie_name']]);
-
 			# SET SESSION WITH ALL MODEL INFORMATION
-			foreach($this->data as $model_name => $model_data) {
+			foreach($data as $model_name => $model_data) {
 	
 				$this->controller->Session->write('Auth.'.$model_name, $model_data);
 		
 			}
 	
 			# UPDATE USERS LAST_LOGIN PROPERTY
-			$this->controller->UacUser->id = $this->data['UacUser']['id'];
-			$this->controller->UacUser->saveField('last_login', date('Y-m-d H:i:s'));
-			#TODO Clear password_change_hash
+			$this->userModel->id = $data['UacUser']['id'];
+			$this->userModel->saveField('last_login', date('Y-m-d H:i:s'));
 	
 			$this->__setCookies();
 			
@@ -127,49 +136,81 @@ class AccountComponent extends Object {
 		
 	}
 	
-	
 	/**
-	 * Handles signup data. Created a new User account and a new Profile
+	 * Create a new account for a user
 	 *
+	 * @param array $data 
 	 * @return bol
 	 * @author Rui Cruz
 	 */
-	public function signup(&$UserModel = null) {		
+	public function signup($data) {		
 
-		if (empty($this->controller->data)) return false;
-		
-		if (is_null($UserModel)) $UserModel = $this->controller->UacUser;
+		if ($this->createNewAccount($data)) {
 			
-		if ($UserModel->signUp($this->controller->data)) {
-			
-			$this->afterSignup();
+			$this->afterSignup($data);
 			return true;
 			
 		} else {
 			
-			unset($this->controller->data['UacUser']['password']);
-			
+			unset($this->controller->data['UacUser']['password']);			
 			return false;
 			
 		}
 
 	}
-	
-	
-	private function afterSignup() {
+		
+	private function afterSignup($data) {
 		
 		#TODO Try to set profile image using a gravatar
 		#var_dump($this->Gravatar->getImage($this->controller->data['UacUser']['email'], 80, GravatarImageSet::FOUROFOUR, GravatarRating::X));
 		
-		
-		
-		$this->EmailQueue->to = $this->controller->data['UacUser']['email'];
+		$this->EmailQueue->to = $data['UacUser']['email'];
 		$this->EmailQueue->from = Configure::read('Email.username');
 		$this->EmailQueue->subject = sprintf('%s %s', Configure::read('App.name'), __('New account activation', true));
 		$this->EmailQueue->template = $this->controller->action;
 		$this->EmailQueue->sendAs = 'both';
 		$this->EmailQueue->delivery = 'db';
 		$this->EmailQueue->send();
+		
+	}
+	
+	
+	public function inviteNewUser($data) {
+
+		if ($this->createNewAccount($data)) {
+			
+			$data['UacUser']['id'] = $this->userModel->id;
+			
+			$new_hash = $this->generatePasswordHash($data);
+
+			# SEND AN EMAIL WITH AN URL TO RESET THE PASSWORD
+			$hashed_url = Router::url(array('plugin' => null, 'controller' => 'users', 'action' => 'activate', $new_hash));
+
+			$this->controller->set(array(
+				'email' => $data['UacUser']['email'],
+				'new_hash' => $new_hash,
+				'hashed_url' => configure::read('App.url') . $hashed_url
+			));
+			
+			return true;
+
+		} else {
+
+			return false;
+
+		}
+
+	}
+	
+	/**
+	 * Handles signup data. Creates a new User account and a new Profile
+	 *
+	 * @return bol
+	 * @author Rui Cruz
+	 */	
+	private function createNewAccount($data) {
+
+		return $this->userModel->signUp($data);
 		
 	}
 	
@@ -212,12 +253,9 @@ class AccountComponent extends Object {
 	 * @return void
 	 * @author Rui Cruz
 	 */
-	function password_recover($user) {		
-		
-		# GENERATE NEW HASH AND SAVE IT
-		$this->controller->UacUser->id = $user['UacUser']['id'];
-		$new_hash = Security::hash($user['UacUser']['email'].time(), null, true);
-		$this->controller->UacUser->saveField('password_change_hash', $new_hash);
+	public function password_recover($user) {		
+				
+		$new_hash = $this->generatePasswordHash($user);
 
 		# SEND AN EMAIL WITH AN URL TO RESET THE PASSWORD
 		$hashed_url = Router::url(array('plugin' => null, 'controller' => 'users', 'action' => 'password_change', $new_hash));
@@ -238,7 +276,25 @@ class AccountComponent extends Object {
 		
 	}
 	
-	
+	public function generatePasswordHash($user) {
+		
+		if (!is_numeric($user['UacUser']['id'])) {
+			Debugger::log('Requesting new password hashes for invalid users');
+			Debugger::log($user);
+			return false;
+		}
+		
+		# GENERATE NEW HASH AND SAVE IT
+		$this->userModel->id = $user['UacUser']['id'];
+		$new_hash = Security::hash($user['UacUser']['email'].time(), null, true);
+		
+		if ($this->userModel->saveField('password_change_hash', $new_hash) === false) {
+			return false;
+		}
+		
+		return $new_hash;
+		
+	}	
 	
 	/**
 	 * 
@@ -284,7 +340,7 @@ class AccountComponent extends Object {
 		
 	}
 	
-	function checkInvitation() {
+	function checkInvitation($data) {
 		
 		$result = false;
 		
@@ -293,20 +349,20 @@ class AccountComponent extends Object {
 			
 			$result = true;
 			
-		} elseif (!isset($this->controller->data['UacUser']['activation_code'])) {
+		} elseif (!isset($data['UacUser']['activation_code'])) {
 			
 			$result = false;
 			
 		} else {
 		
-			define('INVITATION_CODE', $this->controller->data['UacUser']['activation_code']);
+			define('INVITATION_CODE', $data['UacUser']['activation_code']);
 			$InvitationCode = ClassRegistry::init('Invitation.InvitationCode');
 			$result = $InvitationCode->lookup(INVITATION_CODE);
 			
 		}
 				
 		if ($result === false) {
-			$this->controller->UacUser->invalidate('activation_code', __('Invalid code', true));
+			$this->userModel->invalidate('activation_code', __('Invalid code', true));
 		}
 		
 		$this->controller->Session->write('Signup.invitation_ok', $result);
