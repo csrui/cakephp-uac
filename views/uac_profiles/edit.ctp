@@ -19,7 +19,7 @@
 	echo $this->Form->input('first_name');
 	echo $this->Form->input('last_name');
 
-	echo $this->Form->input('dob', array('label' => 'Date of birth', 'type' => 'text', 'class' => 'datepicker'));
+	echo $this->Form->input('dob', array('label' => 'Date of birth', 'class' => 'dobpicker', 'empty' => true, 'minYear' => date('Y', strtotime('-80 years')), 'maxYear' => date('Y', strtotime('-5 years'))));
 	echo $this->Form->input('gender', array('options' => $genders));
 
 	echo $this->Form->hidden('location', array('value' => ''));
