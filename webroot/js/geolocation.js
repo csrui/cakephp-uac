@@ -25,6 +25,7 @@ function userGeo(autoUpdate, options) {
 			
 			navigator.geolocation.getCurrentPosition(function(pos) {
 				
+				$('#' + that.options.notification_container).html('Searching for your location...');	
 				that.renderPosition(pos);
 				
 			}, function() {
@@ -43,10 +44,13 @@ function userGeo(autoUpdate, options) {
 
 	this.renderPosition = function(position) {
 
-	    var urlJSON = 'http://ws.geonames.org/findNearbyPlaceNameJSON?lat='+position.coords.latitude+'&lon='+position.coords.longitude;
+	    var urlJSON = 'http://api.geonames.org/findNearbyPlaceNameJSON?lat='+position.coords.latitude+'&lng='+position.coords.longitude+'&username=planamatch';
+
+		// $user_location = json_decode(file_get_contents("http://api.geonames.org/findNearbyPlaceNameJSON?lat={$point['lat']}&lng={$point['lng']}&username=planamatch"));				
+		// pr($user_location);
+
 
 		$('#' + that.options.input).val(position.coords.latitude + ',' + position.coords.longitude);
-		$('#' + that.options.notification_container).html('Ok, now you can find stuff near you.');
 
 	    // $('#' + this.options.notification_container).html('<div><p>'
 	    //                 + 'Latitude: ' + position.coords.latitude + '<br />'
@@ -63,12 +67,15 @@ function userGeo(autoUpdate, options) {
 	    
 	        /* Parse JSON objects */
 	        $.each(json.geonames,function(i,item) {
-	            // get the name - which is the suburb - and update the page
-	            // alert('name: ' + item.name);
+
 	            $('#' + that.options.location_name_input).val(item.name);
+				$('#' + that.options.notification_container).html('Ok, now you can find stuff near you.');	
+				
 	        });
 	    
 	    });
+	
+		
 	
 	};
 

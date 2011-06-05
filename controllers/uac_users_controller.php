@@ -149,7 +149,12 @@ class UacUsersController extends UacAppController {
 		
 			if ($this->Account->afterSignin($this->data)) {
 			
-				$this->redirect($this->Auth->loginRedirect);
+				$redirect = $this->Session->read('Auth.redirect');
+				if (!empty($redirect)) {
+					$this->redirect($redirect);
+				} else {
+					$this->redirect($this->Auth->loginRedirect);
+				}
 				return true;
 				
 			} else {

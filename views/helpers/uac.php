@@ -53,6 +53,25 @@ class UacHelper extends AppHelper {
 	}
 
 
+	public function lookupRelation($profile_id) {
+		
+		$friends = $this->Session->read('Friends');
+		
+		foreach($friends as $friend) {
+			
+			if ($friend['UacFriendship']['requester_id'] == $profile_id || $friend['UacFriendship']['friend_id'] == $profile_id) {
+				
+				return $friend['UacFriendship'];
+				
+			}
+			
+		}
+		
+		return false;
+		
+	}
+
+
 	/**
 	 * Search in a hasMany situation Model
 	 * Usefull to check if a user belongs to a certain Role

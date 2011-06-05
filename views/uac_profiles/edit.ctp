@@ -1,7 +1,7 @@
 <?php echo $this->Html->script('/uac/js/geolocation.js', array('inline' => false)); ?>
 <?php echo $this->Html->scriptBlock('
 
-	var userGeo = userGeo(false, {input : "UacProfileLocation", UacProfileLocationName: "UacProfileLocationName", notification_container : "location-notification"});
+	var userGeo = userGeo(false, {input : "UacProfileLocation", location_name_input: "UacProfileLocationName", notification_container : "location-notification"});
 
 '); ?>
 
