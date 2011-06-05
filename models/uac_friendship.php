@@ -55,6 +55,50 @@ class UacFriendship extends UacAppModel {
 		)
 	);
 	
+	/**
+	 * Returns a list of friends. 
+	 * Users that have a bidirectional relation to another users
+	 *
+	 * @param mixed $user_ids 
+	 * @param array $blacklist 
+	 * @return mixed
+	 * @author Rui Cruz
+	 */
+	public function getFriends($user_ids, $blacklist = array()) {
+
+		$options['joins'] = array(
+			array(
+				'table' => 'uac_friendships',
+				'alias' => 'f2',
+				'type' => 'INNER',
+				'conditions' => array(
+					'UacFriendship.requester_id = f2.friend_id',
+					'UacFriendship.friend_id = f2.requester_id'
+				)
+			)
+		);
+
+		$options['conditions'] = array(
+			'UacFriendship.requester_id' => $user_ids
+		);
+	
+		$options['conditions'] = set::merge($options['conditions'], array(
+			'NOT' => array(
+				'UacFriendship.friend_id' => set::merge($user_ids, $blacklist)
+			)
+		));
+		
+		$options['group'] = array(
+			'UacProfile.id'
+		);
+
+		$this->Contain('UacProfile');
+		$friends = $this->find('all', $options);
+		
+		return $friends;
+
+	}	
+	
 	
 	public function getStatus($user_id, $friend_id) {
 		
@@ -79,35 +123,20 @@ class UacFriendship extends UacAppModel {
 	}
 	
 	
-	public function getConnectionIDs($user_id) {
+	public function getPending($user_id, $blacklist = array()) {
 		
 		$conditions = array(
-			'OR' => array(
-				'UacFriendship.requester_id' => $user_id,
+			array(
 				'UacFriendship.friend_id' => $user_id
+			),
+			'NOT' => array(
+				'UacFriendship.requester_id' => set::merge($user_id, $blacklist)
 			)
 		);
 		
-		$this->Contain();
 		$friendships = $this->find('all', array('conditions' => $conditions));
 		
-		$tmp = array();
-
-		foreach($friendships as $fs) {
-			
-			if ($fs['UacFriendship']['requester_id'] == $user_id) {
-				
-				$tmp[] = $fs['UacFriendship']['friend_id'];
-				
-			} else {
-				
-				$tmp[] = $fs['UacFriendship']['requester_id'];
-				
-			}
-			
-		}
-		
-		return $tmp;
+		return $friendships;
 		
 	}
 
