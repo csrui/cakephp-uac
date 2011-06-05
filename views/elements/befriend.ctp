@@ -3,6 +3,7 @@
 # PREVENT INTERACTIONS WITH SELF
 if ($friend_id == $this->Session->read('Auth.UacProfile.id')) return false;
 
+if (!empty($friendship) && $friendship['UacFriendship']['requester_id'] == $this->Session->read('Auth.UacProfile.id')) return false;
 // $friendship = $this->Uac->lookupRelation($profile_id);
 
 if (!empty($friendship)) {

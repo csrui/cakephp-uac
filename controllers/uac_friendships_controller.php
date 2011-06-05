@@ -65,38 +65,18 @@ class UacFriendshipsController extends UacAppController {
 			
 		} else {
 			
-			# FIND A PREVIOUS EXISTING CONNECTION
-			
-			// $conditions = array(
-			// 	'OR' => array(
-			// 		array(
-			// 			'UacFriendship.requester_id' => $this->Auth->user('id'),
-			// 			'UacFriendship.friend_id' => $this->data['UacFriendship']['friend_id']
-			// 		),
-			// 		array(
-			// 			'UacFriendship.requester_id' => $this->data['UacFriendship']['friend_id'],
-			// 			'UacFriendship.friend_id' => $this->Auth->user('id')
-			// 		)
-			// 	)
-			// );
-			// 
-			// $existing_connections = $this->UacFriendship->find('count', compact('conditions'));
-			// 
-			// if ($existing_connections == 0) {
-			// 	
-			// 	$this->data['UacFriendship']['requester_id'] = $this->Auth->user('id');
-			// 	$this->UacFriendship->create($this->data);
-			// 	if ($this->UacFriendship->save($this->data)) {
-			// 
-			// 		$this->Session->setFlash(__('Added friend request', true));
-			// 
-			// 	}
-			// 	
-			// }
-			
 			if ($this->UacFriendship->makeFriend($this->Account->id(), $this->data['UacFriendship']['friend_id'])) {
 				
+				$this->UacFriendship->UacProfile->contain('UacUser');
+				$friend = $this->UacFriendship->UacProfile->read(null, $this->data['UacFriendship']['friend_id']);
+
+				$this->UacFriendship->UacProfile->contain();
+				$requester = $this->UacFriendship->UacProfile->read(null, $this->Account->id());
+				$this->set('requester', $requester);
+				
 				$this->Session->setFlash(__('Added friend', true));
+				
+				$this->Notifier->send(sprintf('%s <%s>', $friend['UacProfile']['screen_name'], $friend['UacUser']['email']), 'Someone wants to make friends with you');
 				
 			}
 
