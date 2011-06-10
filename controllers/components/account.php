@@ -294,7 +294,23 @@ class AccountComponent extends Object {
 		
 		return $new_hash;
 		
-	}	
+	}
+	
+	/**
+	 * Checks the current user session for the existence of at least on Role
+	 *
+	 * @return bool
+	 * @author Rui Cruz
+	 */
+	public function hasRole() {
+		
+		if (empty($this->roles)) {
+			$this->roles = $this->controller->Session->read('Auth.UacRole');
+		}
+		
+		return !empty($this->roles);
+		
+	}
 	
 	/**
 	 * 
@@ -307,7 +323,7 @@ class AccountComponent extends Object {
 		if (empty($this->roles)) {
 			$this->roles = $this->controller->Session->read('Auth.UacRole');
 		}
-		
+				
 		$result = false;
 		
 		if (!empty($needed_roles) && !empty($this->roles)) {
@@ -327,7 +343,7 @@ class AccountComponent extends Object {
 				
 			}
 			
-		}
+		}		
 		
 		if ( ($redirect === true) && ($result !== true) ) {
 		
