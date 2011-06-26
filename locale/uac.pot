@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-04-25 17:44+0100\n"
+"POT-Creation-Date: 2011-06-19 13:54+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -16,6 +16,26 @@ msgstr ""
 
 #: /uac_app_controller.php:17
 msgid "Users"
+msgstr ""
+
+#: /controllers/uac_friendships_controller.php:64
+msgid "Invalid id"
+msgstr ""
+
+#: /controllers/uac_friendships_controller.php:77
+msgid "Added friend"
+msgstr ""
+
+#: /controllers/uac_friendships_controller.php:94
+msgid "Invalid friend"
+msgstr ""
+
+#: /controllers/uac_friendships_controller.php:98
+msgid "Friendship deleted"
+msgstr ""
+
+#: /controllers/uac_friendships_controller.php:102
+msgid "Friendship was not deleted"
 msgstr ""
 
 #: /controllers/uac_images_controller.php:13
@@ -74,48 +94,48 @@ msgstr ""
 msgid "Please review the form, we can't create your account"
 msgstr ""
 
-#: /controllers/uac_users_controller.php:157
+#: /controllers/uac_users_controller.php:162
 msgid "No user found with the provided credentials"
 msgstr ""
 
-#: /controllers/uac_users_controller.php:184
+#: /controllers/uac_users_controller.php:189
 msgid "Activate your new account"
 msgstr ""
 
-#: /controllers/uac_users_controller.php:198
+#: /controllers/uac_users_controller.php:203
 msgid "Your account has been successfully activated"
 msgstr ""
 
-#: /controllers/uac_users_controller.php:215
+#: /controllers/uac_users_controller.php:220
 #: /views/uac_users/password_change.ctp:1
 msgid "Change your password"
 msgstr ""
 
-#: /controllers/uac_users_controller.php:243
+#: /controllers/uac_users_controller.php:248
 msgid "Please correct the errors below"
 msgstr ""
 
-#: /controllers/uac_users_controller.php:244
+#: /controllers/uac_users_controller.php:249
 msgid "Your current password doesn't match"
 msgstr ""
 
-#: /controllers/uac_users_controller.php:252
+#: /controllers/uac_users_controller.php:257
 msgid "Your password has been set"
 msgstr ""
 
-#: /controllers/uac_users_controller.php:257
+#: /controllers/uac_users_controller.php:262
 msgid "new password"
 msgstr ""
 
-#: /controllers/uac_users_controller.php:300
+#: /controllers/uac_users_controller.php:305
 msgid ""
 msgstr ""
 
-#: /controllers/uac_users_controller.php:311
+#: /controllers/uac_users_controller.php:316
 msgid "Sorry, we cant find any account with that e-mail address"
 msgstr ""
 
-#: /controllers/uac_users_controller.php:319
+#: /controllers/uac_users_controller.php:324
 msgid "You will receive an e-mail with a code shortly"
 msgstr ""
 
@@ -127,16 +147,28 @@ msgstr ""
 msgid "password recovery"
 msgstr ""
 
-#: /controllers/components/account.php:334
+#: /controllers/components/account.php:350
 msgid "You don't have permission to access that resource"
 msgstr ""
 
-#: /controllers/components/account.php:365
+#: /controllers/components/account.php:381
 msgid "Invalid code"
 msgstr ""
 
 #: /models/uac_user.php:90
 msgid "Passwords must match"
+msgstr ""
+
+#: /views/elements/befriend.ctp:13
+msgid "Accept request"
+msgstr ""
+
+#: /views/elements/befriend.ctp:20
+msgid "Add as friend"
+msgstr ""
+
+#: /views/elements/unfriend.ctp:5
+msgid "Remove"
 msgstr ""
 
 #: /views/elements/user_area.ctp:11

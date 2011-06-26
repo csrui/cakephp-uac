@@ -92,6 +92,36 @@ class AccountComponent extends Object {
 		
 	}
 	
+	public function socialSignin($data) {
+		
+		# DOUBLE CHECK IF USER IS IN DATABASE
+		
+		$user = $this->controller->UacUser->find('first', array(
+			'conditions' => array(
+				'UacUser.email' => $data['UacUser']['email'],
+				'UacUser.active' => 1
+			),
+			'contain' => array(
+			    'UacGigya' => array(
+			        'conditions' => array(
+						'UacGigya.provider' => $data['UacGigya']['provider']
+					)
+			    )
+			)
+		));
+		
+		if ($user === false) {
+
+			return false;
+			
+		}
+		
+		$this->controller->Session->write('Auth.UacUser', $user['UacUser']);
+		
+		return true;
+		
+	}
+	
 	/**
 	 * After signin in, we add extra data to the current session
 	 *

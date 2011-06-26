@@ -40,10 +40,10 @@ class UacUsersController extends UacAppController {
 		
 		$uid = $_GET['UID'];
 		
-		# FIND EXISTING USER
+		# FIND EXISTING CONNECTION
 		
 		$this->data = $this->UacUser->UacGigya->findById($uid);
-				
+		
 		if ($this->data !== true) {
 			
 			$this->data['UacGigya'] = array(
@@ -52,27 +52,41 @@ class UacUsersController extends UacAppController {
 				'data' => serialize($_GET)
 			);
 			
-			$this->data['UacUser'] = array(
-				'email' => $_GET['email'],
-				'password' => '--social-network--'
-			);
+			# CHECK IF USERS EXISTS
 			
-			$this->data['UacProfile'] = array(
-				'screen_name' => $_GET['nickname']
-			);
+			$this->UacUser->Contain();
+			$user = $this->UacUser->findByEmail($_GET['email']);
+			
+			# CREATE A NEW USER
+			
+			if ($user === false) {
+			
+				$this->data['UacUser'] = array(
+					'email' => $_GET['email'],
+					'password' => '--social-network--'
+				);
+			
+				$this->data['UacProfile'] = array(
+					'screen_name' => $_GET['nickname']
+				);
 
-			$this->Account->signUp($this->data);
+				$this->Account->signUp($this->data);
 			
-			$this->data['UacGigya']['uac_user_id'] = $this->UacUser->id;			
+				$this->data['UacGigya']['uac_user_id'] = $this->UacUser->id;			
+				
+			} else {
+				
+				$this->data['UacGigya']['uac_user_id'] = $user['UacUser']['id'];
+				$this->data['UacUser'] = $user['UacUser'];
+				
+			}
+			
 			$this->UacUser->UacGigya->save($this->data);
 			
 		}
 		
-		# MUST ADD PASSWORD OR AUTH::LOGIN WONT WORK
-		$this->data['UacUser']['password'] = '--social-network--';
-		
 		# AUTHENTICATE AND REDIRECT
-		if ($this->Auth->login($this->data['UacUser'])) {
+		if ($this->Account->socialSignin($this->data)) {
 			
 			$this->Account->afterSignin($this->data);
 			$this->redirect($this->Auth->loginRedirect);

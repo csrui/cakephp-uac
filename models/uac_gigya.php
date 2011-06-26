@@ -6,9 +6,13 @@
  * @author Rui Cruz
  */
 class UacGigya extends AppModel {
+	
 	var $name = 'UacGigya';
+	
 	var $useTable = 'uac_gigya';
+	
 	var $displayField = 'provider';
+	
 	var $validate = array(
 		'id' => array(
 			'notempty' => array(
